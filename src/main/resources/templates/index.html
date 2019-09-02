@@ -33,8 +33,6 @@
 #csv {
 	display: none;
 }
-
-
 </style>
 </head>
 <body>
@@ -77,7 +75,7 @@
 				Packages <span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu" id="packageDropdown">
-				<li><i class="fas fa-search"></i> <input type="text"  
+				<li><i class="fas fa-search"></i> <input type="text"
 					placeholder="Search.." id="packageInput" class="searchInput"
 					onkeyup="filterFunction('packageInput','packageDropdown')"></li>
 
@@ -124,7 +122,7 @@
 	                    	   	   if(this.point.expandable==true){
 	                               		return this.point.name + '<i class="fas fa-expand-arrows-alt" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'"></i>';
 	                    	   	   }else if(this.point.collapsable==true){
-	                    	   		return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.id+'"></i>';
+	                    	   			return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'"></i>';
 	                    	   	   }else{
 	                    	   			return this.point.name
 	                    	   	   }
@@ -182,10 +180,10 @@
 		       			expandAndCollapse();
 		            }
 		       		
-		       	});
-			       	
-		       	$(".fa-minus-square").click(function(event){
-			       	$.ajax({
+		       	})
+			});   	
+	       	$(".fa-minus-square").click(function(event){
+		       	$.ajax({
 		       		type: 'GET',
 		       		url : "/collapse/"+$(this).attr("data-id"),
 		       		accept: "application/json",
@@ -195,9 +193,9 @@
 		     				series:{
 		     					animation:{
 		       		        		duration: 2000
-		       		        	}
-		       				}
-		       			 },
+		       		        			  }
+		       					   }
+		       				 },
 		       		        series: {
 		       		            data: data.sankeyItems,
 		       		            nodes: data.nodes,
@@ -207,11 +205,10 @@
 		       			expandAndCollapse();
 		            }
 		       		
-		       	});   	
+	       		});   	
  	
-		});
-		
-       	}
+			});
+		}
 		expandAndCollapse();
 		
 	      

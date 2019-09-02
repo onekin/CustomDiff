@@ -1,6 +1,7 @@
 package com.onekin.customdiff.service;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,16 @@ public class ChurnService {
 	public Iterator<ChurnFeaturesPackageAssets> getAssetsAndFeaturesChurnByPackage(String idPackage) {
 		return featuresAndAssetsRepo.findByPackageId(Integer.parseInt(idPackage)).iterator();
 		
+	}
+
+
+	public List<ChurnPackageAndProduct> getPackagesAndProductsChurnByPackage(String packageId) {
+		return packageAndProductRepo.findByIdPackage(Integer.valueOf(packageId));
+	}
+
+
+	public List<ChurnFeaturesComponentPackages> getFeaturesAndPackagesChurnByPackage(String packageId) {
+		return featuresAndPackagesRepo.findByIdpackage(Integer.valueOf(packageId));
 	}
 
 

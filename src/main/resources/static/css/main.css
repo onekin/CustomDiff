@@ -10,6 +10,7 @@
 	color: black;
 	margin-left: 5px;
 	font-size: 15px;
+	cursor: pointer; 
 }
 
 .fa-expand-arrows-alt:hover {
@@ -22,6 +23,7 @@
 	color: black;
 	margin-left: 5px;
 	font-size: 15px;
+	cursor: pointer; 
 }
 
 .fa-minus-square:hover {

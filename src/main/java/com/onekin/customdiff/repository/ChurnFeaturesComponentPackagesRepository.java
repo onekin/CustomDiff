@@ -1,5 +1,7 @@
 package com.onekin.customdiff.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +19,8 @@ public interface ChurnFeaturesComponentPackagesRepository extends CrudRepository
 
 	@Query(value="SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c GROUP BY c.idfeature, c.idpackage")
 	Iterable<ChurnFeaturesAndPackagesGrouped> getCustomsGroupByFeatures();
+
+	List<ChurnFeaturesComponentPackages> findByIdpackage(int packageId);
+
 
 }

@@ -1,18 +1,15 @@
 package com.onekin.customdiff.repository;
 
-import java.util.Collection;
+import java.util.List;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
 import com.onekin.customdiff.model.ChurnPackageAndProduct;
 
-@Transactional
+@Repository
 public interface ChurnPackageAndProductRepository  extends CrudRepository<ChurnPackageAndProduct, Long>{
 
-	
-	
+	List<ChurnPackageAndProduct> findByIdPackage(int idPackage);
 
-	
 }

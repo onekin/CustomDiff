@@ -1,5 +1,6 @@
 package com.onekin.customdiff.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -44,8 +45,8 @@ public class ChurnPackageAndProduct {
 		return idPackage;
 	}
 
-	public void setIdPackage(int idPackage) {
-		this.idPackage = idPackage;
+	public void setIdPackage(int packageId) {
+		this.idPackage = packageId;
 	}
 
 	public int getIdProductRelease() {
