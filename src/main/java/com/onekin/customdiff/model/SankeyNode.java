@@ -1,5 +1,7 @@
 package com.onekin.customdiff.model;
 
+import com.onekin.customdiff.model.enums.SankeyNodeType;
+
 public class SankeyNode {
 
 	private String id;

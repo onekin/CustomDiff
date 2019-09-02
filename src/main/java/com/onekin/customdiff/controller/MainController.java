@@ -24,9 +24,10 @@ import com.onekin.customdiff.model.ChurnFeaturesPackageAssets;
 import com.onekin.customdiff.model.ChurnPackageAndProduct;
 import com.onekin.customdiff.model.ChurnProductPortfolioAndFeatures;
 import com.onekin.customdiff.model.SankeyItem;
-import com.onekin.customdiff.model.SankeyLinkType;
 import com.onekin.customdiff.model.SankeyNode;
-import com.onekin.customdiff.model.SankeyNodeType;
+import com.onekin.customdiff.model.SankeyResponse;
+import com.onekin.customdiff.model.enums.SankeyLinkType;
+import com.onekin.customdiff.model.enums.SankeyNodeType;
 import com.onekin.customdiff.service.ChurnService;
 import com.onekin.customdiff.service.EntityService;
 

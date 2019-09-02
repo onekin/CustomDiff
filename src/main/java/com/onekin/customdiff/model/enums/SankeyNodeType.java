@@ -1,4 +1,4 @@
-package com.onekin.customdiff.model;
+package com.onekin.customdiff.model.enums;
 
 public enum SankeyNodeType {
 

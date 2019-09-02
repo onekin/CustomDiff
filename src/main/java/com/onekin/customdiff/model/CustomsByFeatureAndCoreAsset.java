@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.onekin.customdiff.utils.Formatting;
+
 @Entity
 @Table(name = "customs_by_feature_and_coreasset")
 public class CustomsByFeatureAndCoreAsset {
@@ -137,8 +139,11 @@ public class CustomsByFeatureAndCoreAsset {
 	}
 
 	public String getCustom_diff() {
-		return custom_diff;
-	}
+		try {
+			return Formatting.decodeFromBase64(custom_diff);
+		} catch (Exception e) {
+			return custom_diff;
+		}	}
 
 
 	public void setCustom_diff(String custom_diff) {

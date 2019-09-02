@@ -3,6 +3,8 @@ package com.onekin.customdiff.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.onekin.customdiff.model.enums.SankeyLinkType;
+
 public class SankeyItem {
 
 	private String from;

@@ -91,7 +91,15 @@
 		</div>
 	</div>
 	<div id="container"></div>
+	<footer class="footer">
+		<div class="container">
+			<span class="text-muted"> <img src="images/onekinLogo.png"
+				alt="Logo" style="width: 150px; height: 70px;"> Contact:
+				oscar.diaz@ehu.eus, leticia.montalvillo@ehu.eus </img>
+			</span>
 
+		</div>
+	</footer>
 
 
 
@@ -103,8 +111,12 @@
 				series:{
 					 events: {
 			                click: function (event) {
-			                    console.log(event);
-			                }
+								   		if (event.point.isNode){
+								   			window.location.href = window.location.href+"node-customizations";
+								   		}else{
+								   			window.location.href = window.location.href+"link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to;
+								   		}
+						   		}
 			            }
 				},
 		        sankey: {
@@ -181,6 +193,8 @@
 		            }
 		       		
 		       	})
+		       	event.stopPropagation();
+			    event.preventDefault();
 			});   	
 	       	$(".fa-minus-square").click(function(event){
 		       	$.ajax({
@@ -206,7 +220,8 @@
 		            }
 		       		
 	       		});   	
- 	
+		       	event.stopPropagation();
+			    event.preventDefault(); 	
 			});
 		}
 		expandAndCollapse();

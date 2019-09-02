@@ -1,10 +1,7 @@
-package com.onekin.customdiff.controller;
+package com.onekin.customdiff.model;
 
 import java.util.List;
 import java.util.Set;
-
-import com.onekin.customdiff.model.SankeyItem;
-import com.onekin.customdiff.model.SankeyNode;
 
 public class SankeyResponse {
 

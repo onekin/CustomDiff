@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="/css/diff2html.min.css">
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+	integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+	crossorigin="anonymous">
+<link rel="stylesheet" type="text/css"
+	href="/css/bootstrap/bootstrap.min.css"></link>
+
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/bootstrap/popper.min.js"></script>
+<script src="/js/bootstrap/bootstrap.min.js"></script>
+<script src="/js/diff2html.min.js"></script>
+<script src="/js/diff2html-ui.min.js"></script>
+
+
+
+</head>
+<body>
+
+	<div class="container">
+
+		<div id="accordion">
+			<div class="card" th:each="customization,iter : ${customizations}">
+				<div class="card-header" th:id="'heading'+${iter.index}">
+					<h5 class="mb-0">
+						<button class="btn btn-link" data-toggle="collapse"
+							th:data-target="'#collapse'+${iter.index}" aria-expanded="true"
+							th:aria-controls="'collapse'+${iter.index}" th:inline="text">
+							FILE: [[${#strings.capitalize(customization.capath)}]]<i
+								class="fas fa-caret-down"></i>
+						</button>
+					</h5>
+				</div>
+
+				<div th:id="'collapse'+${iter.index}" class="collapse"
+					th:aria-labelledby="'heading'+${iter.index}"
+					data-parent="#accordion">
+					<div class="card-body diffview" th:id="'diffview'+${iter.index}"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				(function() {
+					/** For the diff view **/
+					var diffValues = /*[[${customizations}]]*/;
+					diffValues.forEach(function(diffvalue,i){
+						if (diffvalue.first == null)
+							diffvalue.first="Could not obtain diff value";
+						console.log("diffvalue:\n" + diffvalue.content);
+						var diff2htmlUi = new Diff2HtmlUI({
+							diff : diffvalue.custom_diff
+						});
+						console.log(diff2htmlUi);
+						diff2htmlUi.draw('#diffview'+i, {
+							inputFormat : 'json',
+							showFiles : true,
+							matching : 'lines'
+						});
+					});
+					/*double*/
+				})();
+				/*]]>*/
+			</script>
+
+
+</body>
+</html>
