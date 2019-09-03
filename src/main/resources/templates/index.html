@@ -90,7 +90,9 @@
 			</ul>
 		</div>
 	</div>
-	<div id="container"></div>
+	<div id="container">
+	
+	</div>
 	<footer class="footer">
 		<div class="container">
 			<span class="text-muted"> <img src="images/onekinLogo.png"
@@ -112,7 +114,7 @@
 					 events: {
 			                click: function (event) {
 								   		if (event.point.isNode){
-								   			window.location.href = window.location.href+"node-customizations";
+								   			window.location.href = window.location.href+"node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id;
 								   		}else{
 								   			window.location.href = window.location.href+"link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to;
 								   		}

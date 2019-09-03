@@ -28,9 +28,24 @@ public class ChurnFeaturesPackageAssets {
 	int isroot;
 	int added;
 	int deleted;
-	int  churn;
+	long  churn;
+	
 
 	
+	public ChurnFeaturesPackageAssets(String id, String featureId, String featurename, int idcoreasset, String caname,
+			String capath, int packageId, long churn) {
+		super();
+		this.id = id;
+		this.featureId = featureId;
+		this.featurename = featurename;
+		this.idcoreasset = idcoreasset;
+		this.caname = caname;
+		this.capath = capath;
+		this.packageId = packageId;
+		this.churn = churn;
+	}
+
+
 	public ChurnFeaturesPackageAssets(){}
 
 
@@ -174,12 +189,12 @@ public class ChurnFeaturesPackageAssets {
 	}
 
 
-	public int getChurn() {
+	public long getChurn() {
 		return churn;
 	}
 
 
-	public void setChurn(int churn) {
+	public void setChurn(long churn) {
 		this.churn = churn;
 	}
 

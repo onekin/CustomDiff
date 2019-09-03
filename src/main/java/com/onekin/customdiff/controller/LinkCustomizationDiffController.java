@@ -4,62 +4,65 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 import com.onekin.customdiff.model.CustomsByFeatureAndCoreAsset;
-import com.onekin.customdiff.service.CustomizationDiffService;
+import com.onekin.customdiff.service.LinkCustomizationDiffService;
 
 @Controller
-public class CustomizationDiffController {
+@RequestMapping("/link-customizations")
+public class LinkCustomizationDiffController {
 
 	@Autowired
-	private CustomizationDiffService customizationDiffService;
+	private LinkCustomizationDiffService linkCustomizationDiffService;
 
-	@GetMapping("/link-customizations/packageproduct")
+	@GetMapping("/packageproduct")
 	public String getPackageAndProductCustomizations(@RequestParam("from") String from, @RequestParam("to") String to,
 			Model model) {
-		List<CustomsByFeatureAndCoreAsset> packageAndProductsCustomizations = customizationDiffService
+		List<CustomsByFeatureAndCoreAsset> packageAndProductsCustomizations = linkCustomizationDiffService
 				.getPackageAndProductsCustomizations(from, to);
 		model.addAttribute("customizations", packageAndProductsCustomizations);
-		return "customizations-diffs";
+
+		return "links-diffs";
 	}
 
-	@GetMapping("/link-customizations/assetproduct")
+	@GetMapping("/assetproduct")
 	public String getProductAndAssetCustomizations(@RequestParam("from") String from, @RequestParam("to") String to,
 			Model model) {
-		List<CustomsByFeatureAndCoreAsset> productAndAssetCustomizations = customizationDiffService
+		List<CustomsByFeatureAndCoreAsset> productAndAssetCustomizations = linkCustomizationDiffService
 				.getProductAndAssetCustomizations(from, to);
 		model.addAttribute("customizations", productAndAssetCustomizations);
-		return "customizations-diffs";
+		return "links-diffs";
 	}
 
-	@GetMapping("/link-customizations/productfeature")
+	@GetMapping("/productfeature")
 	public String getProductAndFeatureCustomizations(@RequestParam("from") String from, @RequestParam("to") String to,
 			Model model) {
-		List<CustomsByFeatureAndCoreAsset> productAndFeatureCustomizations = customizationDiffService
+		List<CustomsByFeatureAndCoreAsset> productAndFeatureCustomizations = linkCustomizationDiffService
 				.getProductAndFeatureCustomizations(from, to);
 		model.addAttribute("customizations", productAndFeatureCustomizations);
-		return "customizations-diffs";
+		return "links-diffs";
 	}
 
-	@GetMapping("/link-customizations/featureasset")
+	@GetMapping("/featureasset")
 	public String getFeatureAndAssetCustomizations(@RequestParam("from") String from, @RequestParam("to") String to,
 			Model model) {
-		List<CustomsByFeatureAndCoreAsset> featureAndAssetCustomizations = customizationDiffService
+		List<CustomsByFeatureAndCoreAsset> featureAndAssetCustomizations = linkCustomizationDiffService
 				.getFeatureAndAssetCustomizations(from, to);
 		model.addAttribute("customizations", featureAndAssetCustomizations);
-		return "customizations-diffs";
+		return "links-diffs";
 	}
 
-	@GetMapping("/link-customizations/featurepackage")
+	@GetMapping("/featurepackage")
 	public String getFeatureAndPackageCustomizations(@RequestParam("from") String from, @RequestParam("to") String to,
 			Model model) {
-		List<CustomsByFeatureAndCoreAsset> featureAndPackageCustomizations = customizationDiffService
+		List<CustomsByFeatureAndCoreAsset> featureAndPackageCustomizations = linkCustomizationDiffService
 				.getFeatureAndPackageCustomizations(from, to);
 		model.addAttribute("customizations", featureAndPackageCustomizations);
-		return "customizations-diffs";
+		return "links-diffs";
 	}
 
 }

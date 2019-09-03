@@ -28,18 +28,18 @@ import com.onekin.customdiff.model.SankeyNode;
 import com.onekin.customdiff.model.SankeyResponse;
 import com.onekin.customdiff.model.enums.SankeyLinkType;
 import com.onekin.customdiff.model.enums.SankeyNodeType;
-import com.onekin.customdiff.service.ChurnService;
+import com.onekin.customdiff.service.SankeyService;
 import com.onekin.customdiff.service.EntityService;
 
 @Controller
-public class MainController {
+public class SankeyController {
 
 	private final String PRODUCT_PREFIX = "pr-";
 	private final String PACKAGE_PREFIX = "pck-";
 	private final String ASSET_PREFIX = "ca-";
 
 	@Autowired
-	private ChurnService mainService;
+	private SankeyService mainService;
 
 	@Autowired
 	private EntityService entityService;

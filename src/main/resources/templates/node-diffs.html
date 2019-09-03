@@ -21,7 +21,18 @@
 </head>
 <body>
 
+
+
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Sankey Diagram</a></li>
+			<li class="breadcrumb-item active" aria-current="page"><span
+				th:text="'Customizations of ' + ${nodeType} +': '+${nodeName}"></span></li>
+		</ol>
+	</nav>
+
 	<div class="container">
+
 
 		<div id="accordion">
 			<div class="card" th:each="customization,iter : ${customizations}">
@@ -30,7 +41,8 @@
 						<button class="btn btn-link" data-toggle="collapse"
 							th:data-target="'#collapse'+${iter.index}" aria-expanded="true"
 							th:aria-controls="'collapse'+${iter.index}" th:inline="text">
-							FILE: [[${#strings.capitalize(customization.capath)}]]<i
+							FILE: [[${#strings.capitalize(customization.capath)}]] - FEATURE:
+							[[${#strings.capitalize(customization.idfeature)}]]<i
 								class="fas fa-caret-down"></i>
 						</button>
 					</h5>

@@ -19,7 +19,7 @@ import com.onekin.customdiff.repository.ChurnPackageAndProductRepository;
 import com.onekin.customdiff.repository.ChurnProductPortfolioAndFeaturesRepository;
 
 @Service
-public class ChurnService {
+public class SankeyService {
 
 	@Autowired
 	private ChurnProductPortfolioAndFeaturesRepository productAndFeaturesRepo;
@@ -62,13 +62,13 @@ public class ChurnService {
 
 
 	public Iterator<ChurnCoreAssetsAndFeaturesByProduct> getAssetsAndProductChurnByPackage(String idPackage) {
-		return  assetsAndProductRepo.findByPackageId(Integer.parseInt(idPackage)).iterator();
+		return  assetsAndProductRepo.findByPackageIdGroupByAssetId(Integer.parseInt(idPackage)).iterator();
 		
 	}
 
 
 	public Iterator<ChurnFeaturesPackageAssets> getAssetsAndFeaturesChurnByPackage(String idPackage) {
-		return featuresAndAssetsRepo.findByPackageId(Integer.parseInt(idPackage)).iterator();
+		return featuresAndAssetsRepo.findByPackageIdGroupedByFeaturesAndAsset(Integer.parseInt(idPackage)).iterator();
 		
 	}
 

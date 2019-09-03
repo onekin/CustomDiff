@@ -9,18 +9,23 @@ import com.onekin.customdiff.model.CustomsByFeatureAndCoreAsset;
 import com.onekin.customdiff.repository.CustomsByFeatureAndCoreAssetRepository;
 
 @Service
-public class CustomizationDiffService {
+public class LinkCustomizationDiffService {
 
 	@Autowired
 	private CustomsByFeatureAndCoreAssetRepository customsByFeatureAndCoreAssetRepo;
 
 	public List<CustomsByFeatureAndCoreAsset> getPackageAndProductsCustomizations(String packageId, String productId) {
-		throw new UnsupportedOperationException();
+		int productIdCleaned = Integer.valueOf(productId.split("-")[1]);
+		int packageIdCleaned = Integer.valueOf(packageId.split("-")[1].replace("'", ""));
+
+		return customsByFeatureAndCoreAssetRepo.findByIdpackageAndIdproductrelease(packageIdCleaned, productIdCleaned);
 	}
 
 	public List<CustomsByFeatureAndCoreAsset> getProductAndAssetCustomizations(String assetId, String productId) {
-		// TODO Auto-generated method stub
-		return null;
+		int productIdCleaned = Integer.valueOf(productId.split("-")[1]);
+		int assetIdCleaned = Integer.valueOf(assetId.split("-")[1].replace("'", ""));
+
+		return customsByFeatureAndCoreAssetRepo.findByIdcoreassetAndIdproductrelease(assetIdCleaned, productIdCleaned);
 	}
 
 	public List<CustomsByFeatureAndCoreAsset> getProductAndFeatureCustomizations(String productId, String featureId) {
@@ -29,15 +34,14 @@ public class CustomizationDiffService {
 	}
 
 	public List<CustomsByFeatureAndCoreAsset> getFeatureAndAssetCustomizations(String featureId, String assetId) {
-		// TODO Auto-generated method stub
-		return null;
+		int assetIdCleaned = Integer.valueOf(assetId.split("-")[1].replace("'", ""));
+		return customsByFeatureAndCoreAssetRepo.findByIdcoreassetAndIdfeature(assetIdCleaned, featureId);
 	}
 
 	public List<CustomsByFeatureAndCoreAsset> getFeatureAndPackageCustomizations(String featureId, String packageId) {
-		throw new UnsupportedOperationException();
+		int packageIdCleaned = Integer.valueOf(packageId.split("-")[1].replace("'", ""));
+
+		return customsByFeatureAndCoreAssetRepo.findByIdpackageAndIdfeature(packageIdCleaned, featureId);
 	}
-	
-	
-	
-	
+
 }

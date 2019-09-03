@@ -18,12 +18,30 @@ public class ChurnCoreAssetsAndFeaturesByProduct {
 	String ca_name;
 	String ca_path;
 	int packageId;
-	int churn;
+	long churn;
 	
 
 
 
 	public ChurnCoreAssetsAndFeaturesByProduct() {}
+
+	
+	
+	public ChurnCoreAssetsAndFeaturesByProduct(String id, int idproductrelease, String featureId, int idcoreasset,
+			String pr_name, String ca_name, String ca_path, int packageId, long churn) {
+		super();
+		this.id = id;
+		this.idproductrelease = idproductrelease;
+		this.featureId = featureId;
+		this.idcoreasset = idcoreasset;
+		this.pr_name = pr_name;
+		this.ca_name = ca_name;
+		this.ca_path = ca_path;
+		this.packageId = packageId;
+		this.churn = churn;
+	}
+
+
 
 	public String getId() {
 		return id;
@@ -74,11 +92,11 @@ public class ChurnCoreAssetsAndFeaturesByProduct {
 		this.ca_path = ca_path;
 	}
 
-	public int getChurn() {
+	public long getChurn() {
 		return churn;
 	}
 
-	public void setChurn(int churn) {
+	public void setChurn(long churn) {
 		this.churn = churn;
 	}
 

@@ -58,3 +58,20 @@ ul.dropdown-menu.show {
 button.btn.btn-primary.float-right {
 	margin-right: 10%;
 }
+
+.title-container {
+	display: table;
+	font-weight: bold;
+}
+
+.breadcrumb {
+	padding: 8px 15px;
+	margin-bottom: 20px;
+	margin-top: 20px;
+	list-style: none;
+	background-color: #0000;
+	border-radius: 4px;
+	padding-left: 50px;
+	float: left;
+	font-size: 22px;
+}
