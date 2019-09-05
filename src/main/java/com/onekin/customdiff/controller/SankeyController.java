@@ -15,11 +15,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.onekin.customdiff.model.ChurnCoreAssetsAndFeaturesByProduct;
 import com.onekin.customdiff.model.ChurnFeaturesAndPackagesGrouped;
-import com.onekin.customdiff.model.ChurnFeaturesComponentPackages;
 import com.onekin.customdiff.model.ChurnFeaturesPackageAssets;
 import com.onekin.customdiff.model.ChurnPackageAndProduct;
 import com.onekin.customdiff.model.ChurnProductPortfolioAndFeatures;
@@ -28,8 +30,9 @@ import com.onekin.customdiff.model.SankeyNode;
 import com.onekin.customdiff.model.SankeyResponse;
 import com.onekin.customdiff.model.enums.SankeyLinkType;
 import com.onekin.customdiff.model.enums.SankeyNodeType;
-import com.onekin.customdiff.service.SankeyService;
 import com.onekin.customdiff.service.EntityService;
+import com.onekin.customdiff.service.SankeyFilterService;
+import com.onekin.customdiff.service.SankeyService;
 
 @Controller
 public class SankeyController {
@@ -42,173 +45,242 @@ public class SankeyController {
 	private SankeyService mainService;
 
 	@Autowired
+	private SankeyFilterService sankeyFilterService;
+
+	@Autowired
 	private EntityService entityService;
 
 	@GetMapping("/")
-	public String index(Model model, HttpSession session) {
-		model.addAttribute("products", entityService.getProducts());
-		model.addAttribute("features", entityService.getFeatures());
-		model.addAttribute("componentPackages", entityService.getPackages());
-
-		List<SankeyItem> productToFeatureSankey = new ArrayList<>();
+	public String loadInitialData(Model model) {
+		model.addAttribute("features", entityService.getCustomizedFeatures());
+		List<SankeyItem> sankeyInitialLinks = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
-
-		SankeyItem sankeyItem;
-
-		ChurnPackageAndProduct churnAssetsProducts;
-		Iterator<ChurnPackageAndProduct> it3 = mainService.getPackagesAndProductsChurn();
-
-		while (it3.hasNext()) {
-			churnAssetsProducts = it3.next();
-			sankeyItem = new SankeyItem(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
-					PRODUCT_PREFIX + churnAssetsProducts.getIdProductRelease(), churnAssetsProducts.getChurn(),
-					SankeyLinkType.PACKAGEPRODUCT);
-			productToFeatureSankey.add(sankeyItem);
-
-			nodes.add(new SankeyNode(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage(),
-					churnAssetsProducts.getPackageName(), true, false, SankeyNodeType.PACKAGE));
-			nodes.add(new SankeyNode(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
-					churnAssetsProducts.getPackageName(), true, false, SankeyNodeType.PACKAGE));
-			nodes.add(new SankeyNode(PRODUCT_PREFIX + churnAssetsProducts.getIdProductRelease(),
-					churnAssetsProducts.getPrName(), false, false, SankeyNodeType.PRODUCT));
-
-		}
-
-		Iterator<ChurnProductPortfolioAndFeatures> it = mainService.getProductAndFeaturesChurn();
-		ChurnProductPortfolioAndFeatures churnProdFeature;
-		while (it.hasNext()) {
-			churnProdFeature = it.next();
-			if (!churnProdFeature.getId_feature().equals("No Feature")) {
-				sankeyItem = new SankeyItem(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
-						churnProdFeature.getId_feature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
-				productToFeatureSankey.add(sankeyItem);
-				nodes.add(new SankeyNode(churnProdFeature.getId_feature(), churnProdFeature.getFeaturemodified(), false,
-						false, SankeyNodeType.FEATURE));
-			}
-		}
-
-		ChurnFeaturesAndPackagesGrouped churnFeaturesAssets;
-		Iterator<ChurnFeaturesAndPackagesGrouped> it2 = mainService.getFeaturesAndPackagesChurn();
-
-		while (it2.hasNext()) {
-			churnFeaturesAssets = it2.next();
-			if (!churnFeaturesAssets.getIdfeature().equals("No Feature")) {
-				sankeyItem = new SankeyItem(churnFeaturesAssets.getIdfeature(),
-						PACKAGE_PREFIX + churnFeaturesAssets.getIdpackage(), churnFeaturesAssets.getChurn(),
-						SankeyLinkType.FEATUREPACKAGE);
-				productToFeatureSankey.add(sankeyItem);
-			}
-		}
-
-		session.setAttribute("sankeyData", productToFeatureSankey);
-		session.setAttribute("nodes", nodes);
-		model.addAttribute("sankeyData", productToFeatureSankey);
+		mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
+		model.addAttribute("sankeyData", sankeyInitialLinks);
 		model.addAttribute("nodes", nodes);
 		return "index";
 	}
 
 	@ResponseBody
-	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, path = "/nodes/{expandId}")
-	public SankeyResponse expandNode(@PathVariable(name = "expandId") String expandId, HttpSession session) {
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, path = "/nodes/{expandId}")
+	public SankeyResponse expandNode(@PathVariable(name = "expandId") String expandId,
+			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
 
-		List<SankeyItem> sankeyData = (List<SankeyItem>) session.getAttribute("sankeyData");
-		Set<SankeyNode> nodes = (Set<SankeyNode>) session.getAttribute("nodes");
-		nodes.removeIf(x -> x.getId().equals(expandId));
-		sankeyData = SankeyItem.deleteFromListById(sankeyData, expandId);
-		// TODO implementar segun tipo de artefacto
-		String artefactId = expandId.split("-")[1];
-		SankeyItem sankeyItem;
-		if (artefactId.contains("'")) {
-			Iterator<ChurnCoreAssetsAndFeaturesByProduct> it = mainService
-					.getAssetsAndProductChurnByPackage(artefactId.substring(0, artefactId.length() - 1));
-			ChurnCoreAssetsAndFeaturesByProduct assetsAndFeatureChurn;
-			SankeyNode node;
+		sankeyResponse.getNodes().removeIf(x -> x.getId().equals(expandId));
+		sankeyResponse.removeLinksById(expandId);
+		// TODO implementar segun tipo de artefacto ???
 
-			while (it.hasNext()) {
-				assetsAndFeatureChurn = it.next();
-				sankeyItem = new SankeyItem(ASSET_PREFIX + assetsAndFeatureChurn.getIdcoreasset() + "'",
-						PRODUCT_PREFIX + assetsAndFeatureChurn.getIdproductrelease(), assetsAndFeatureChurn.getChurn(),
-						SankeyLinkType.ASSETPRODUCT);
-				sankeyData.add(sankeyItem);
-				node = new SankeyNode(ASSET_PREFIX + assetsAndFeatureChurn.getIdcoreasset() + "'",
-						assetsAndFeatureChurn.getCa_path(), false, true, SankeyNodeType.ASSET);
-				node.setParentId(PACKAGE_PREFIX + assetsAndFeatureChurn.getPackageId() + "'");
-				nodes.add(node);
+		String packageId = expandId.split("-")[1];
+		if (packageId.contains("'")) {
+			if (featureIds.size() <= 0) {
+				mainService.expandLeftPackage(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(),
+						packageId.substring(0, packageId.length() - 1));
+			} else {
+				mainService.expandLeftPackageFiltered(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(),
+						packageId.substring(0, packageId.length() - 1), featureIds);
 			}
 		} else {
-			Iterator<ChurnFeaturesPackageAssets> it = mainService.getAssetsAndFeaturesChurnByPackage(artefactId);
-			ChurnFeaturesPackageAssets churnFeaturesAssets;
-			SankeyNode node;
-			while (it.hasNext()) {
-				churnFeaturesAssets = it.next();
-				if (!churnFeaturesAssets.getFeatureId().equals("No Feature")) {
-					sankeyItem = new SankeyItem(churnFeaturesAssets.getFeatureId(),
-							ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(), churnFeaturesAssets.getChurn(),
-							SankeyLinkType.FEATUREASSET);
-					sankeyData.add(sankeyItem);
-					node = new SankeyNode(ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(),
-							churnFeaturesAssets.getCapath(), false, true, SankeyNodeType.ASSET);
-					node.setParentId(PACKAGE_PREFIX + churnFeaturesAssets.getPackageId());
-					nodes.add(node);
-				}
+			if (featureIds.size() <= 0) {
+
+				mainService.expandRightPackage(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(), packageId);
+			} else {
+				mainService.expandRightPackageFiltered(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(),
+						packageId, featureIds);
+
 			}
+
 		}
 
-		return new SankeyResponse(sankeyData, nodes);
+		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
 
 	}
 
 	@ResponseBody
-	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, path = "/collapse/{collapseId}")
-	public SankeyResponse collapseNodes(@PathVariable(name = "collapseId") String collapseId, HttpSession session) {
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, path = "/collapse/{collapseId}")
+	public SankeyResponse collapseNodes(@PathVariable(name = "collapseId") String collapseId,
+			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
 
-		List<SankeyItem> sankeyData = (List<SankeyItem>) session.getAttribute("sankeyData");
-		Set<SankeyNode> nodes = (Set<SankeyNode>) session.getAttribute("nodes");
-		List<SankeyNode> nodesToRemove = nodes.stream()
+		List<SankeyNode> nodesToRemove = sankeyResponse.getNodes().stream()
 				.filter(x -> x.getParentId() != null && x.getParentId().equals(collapseId))
 				.collect(Collectors.toList());
-		nodes.removeAll(nodesToRemove);
-		sankeyData = SankeyItem.deleteFromListByParentId(sankeyData, nodesToRemove);
+		sankeyResponse.getNodes().removeAll(nodesToRemove);
+		sankeyResponse.removeLinksByParentId(nodesToRemove);
 
 		// TODO implementar segun tipo de artefacto
-		String artefactId = collapseId.split("-")[1];
-		SankeyItem sankeyItem;
+		String packageId = collapseId.split("-")[1];
 
-		if (artefactId.contains("'")) {
-			List<ChurnPackageAndProduct> churnPackageAndProductList = mainService
-					.getPackagesAndProductsChurnByPackage(artefactId.substring(0, artefactId.length() - 1));
-			SankeyNode node;
+		if (packageId.contains("'")) {
+			if (featureIds.size() <= 0) {
 
-			for (ChurnPackageAndProduct packageAndProductChurn : churnPackageAndProductList) {
-				sankeyItem = new SankeyItem(PACKAGE_PREFIX + packageAndProductChurn.getIdPackage() + "'",
-						PRODUCT_PREFIX + packageAndProductChurn.getIdProductRelease(),
-						packageAndProductChurn.getChurn(), SankeyLinkType.PACKAGEPRODUCT);
-				sankeyData.add(sankeyItem);
-				node = new SankeyNode(PACKAGE_PREFIX + packageAndProductChurn.getIdPackage() + "'",
-						packageAndProductChurn.getPackageName(), true, false, SankeyNodeType.PACKAGE);
-				nodes.add(node);
+				mainService.collapseLeftFilesIntoPackage(sankeyResponse.getNodes(), sankeyResponse.getSankeyItems(),
+						packageId.substring(0, packageId.length() - 1));
+			} else {
+				mainService.collapseLeftFilesIntoPackageFiltered(sankeyResponse.getNodes(),
+						sankeyResponse.getSankeyItems(), packageId.substring(0, packageId.length() - 1), featureIds);
 			}
 		} else {
-			List<ChurnFeaturesComponentPackages> churnFeaturesPackagesList = mainService
-					.getFeaturesAndPackagesChurnByPackage(artefactId);
-			SankeyNode node;
+			if (featureIds.size() <= 0) {
 
-			for (ChurnFeaturesComponentPackages churnFeaturesAndPackage : churnFeaturesPackagesList) {
-				if (!churnFeaturesAndPackage.getIdfeature().equals("No Feature")) {
-					sankeyItem = new SankeyItem(churnFeaturesAndPackage.getIdfeature(),
-							PACKAGE_PREFIX + churnFeaturesAndPackage.getIdpackage(), churnFeaturesAndPackage.getChurn(),
-							SankeyLinkType.FEATUREPACKAGE);
-					sankeyData.add(sankeyItem);
-					node = new SankeyNode(PACKAGE_PREFIX + churnFeaturesAndPackage.getIdpackage(),
-							churnFeaturesAndPackage.getPackage_name(), true, false, SankeyNodeType.PACKAGE);
-					nodes.add(node);
-				}
+				mainService.collapseRightFilesIntoPackage(sankeyResponse.getNodes(), sankeyResponse.getSankeyItems(),
+						packageId);
+			} else {
+				mainService.collapseRightFilesIntoPackageFiltered(sankeyResponse.getNodes(),
+						sankeyResponse.getSankeyItems(), packageId, featureIds);
 			}
 
 		}
 
-		return new SankeyResponse(sankeyData, nodes);
-
+		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
 	}
 
+	@ResponseBody
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, path = "/filter-features")
+	public SankeyResponse filterSankeyByFeatures(@RequestParam(name = "features") List<String> featureIds,
+			HttpSession session, @RequestBody List<SankeyItem> currentSankeyLinks) {
+		List<SankeyItem> sankeyData = new ArrayList<>();
+		Set<SankeyNode> nodes = new HashSet<>();
+
+		SankeyItem sankeyItem;
+
+		// Calculate left package ids to maintain the expand and collapse filters
+		Set<String> leftPackages = currentSankeyLinks.stream()
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.PACKAGEPRODUCT).map(SankeyItem::getFrom)
+				.collect(Collectors.toSet());
+
+		// Calculate all the package ids to find possible new packages and maintain
+		// expand and collapse filters
+		Set<String> allLeftPackages = new HashSet<String>();
+		allLeftPackages.addAll(leftPackages);
+
+		// Calculate left assets ids to maintain the expand and collapse filters
+		Set<String> leftAssets = currentSankeyLinks.stream()
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.ASSETPRODUCT).map(SankeyItem::getFrom)
+				.collect(Collectors.toSet());
+
+		// Asset - Product
+		if (leftAssets.size() > 0) {
+			List<ChurnCoreAssetsAndFeaturesByProduct> it4 = sankeyFilterService
+					.getAssetsAndProductsChurnInFeaturesAndInPackages(featureIds, leftAssets);
+			SankeyNode node;
+			for (ChurnCoreAssetsAndFeaturesByProduct churnCoreAssetsAndFeaturesByProduct : it4) {
+
+				sankeyItem = new SankeyItem(ASSET_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdcoreasset() + "'",
+						PRODUCT_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdproductrelease(),
+						churnCoreAssetsAndFeaturesByProduct.getChurn(), SankeyLinkType.ASSETPRODUCT);
+				sankeyData.add(sankeyItem);
+				node = new SankeyNode(ASSET_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdcoreasset() + "'",
+						churnCoreAssetsAndFeaturesByProduct.getCa_path(), false, true, SankeyNodeType.ASSET);
+				node.setParentId(PACKAGE_PREFIX + churnCoreAssetsAndFeaturesByProduct.getPackageId() + "'");
+				nodes.add(new SankeyNode(PRODUCT_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdproductrelease(),
+						churnCoreAssetsAndFeaturesByProduct.getPr_name(), false, false, SankeyNodeType.PRODUCT));
+				allLeftPackages.add(PACKAGE_PREFIX + churnCoreAssetsAndFeaturesByProduct.getPackageId() + "'");
+				nodes.add(node);
+			}
+		}
+
+		// PAckage - Product
+		if (allLeftPackages.size() > 0) {
+			List<ChurnPackageAndProduct> it3 = new ArrayList<>();
+			if (leftPackages.size() > 0) {
+				it3.addAll(sankeyFilterService.getPackagesAndProductsChurnInFeaturesAndInPackages(featureIds,
+						leftPackages));
+			}
+			it3.addAll(sankeyFilterService.getPackagesAndProductsChurnInFeaturesAndNotInExistingPackages(featureIds,
+					allLeftPackages));
+
+			for (ChurnPackageAndProduct churnAssetsProducts : it3) {
+
+				sankeyItem = new SankeyItem(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
+						PRODUCT_PREFIX + churnAssetsProducts.getIdProductRelease(), churnAssetsProducts.getChurn(),
+						SankeyLinkType.PACKAGEPRODUCT);
+				sankeyData.add(sankeyItem);
+
+				nodes.add(new SankeyNode(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
+						churnAssetsProducts.getPackageName(), true, false, SankeyNodeType.PACKAGE));
+				nodes.add(new SankeyNode(PRODUCT_PREFIX + churnAssetsProducts.getIdProductRelease(),
+						churnAssetsProducts.getPrName(), false, false, SankeyNodeType.PRODUCT));
+
+			}
+		}
+
+		// Product - Feature
+		Iterator<ChurnProductPortfolioAndFeatures> it = sankeyFilterService
+				.getProductAndFeaturesChurnInFeatures(featureIds);
+		ChurnProductPortfolioAndFeatures churnProdFeature;
+		while (it.hasNext()) {
+			churnProdFeature = it.next();
+			if (!churnProdFeature.getIdFeature().equals("No Feature")) {
+				sankeyItem = new SankeyItem(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
+				sankeyData.add(sankeyItem);
+				nodes.add(new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
+						false, SankeyNodeType.FEATURE));
+			}
+		}
+
+		Set<String> rightPackages = currentSankeyLinks.stream()
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREPACKAGE).map(SankeyItem::getTo)
+				.collect(Collectors.toSet());
+		// Calculate all the package ids to find possible new packages and maintain
+		// expand and collapse filters
+		Set<String> allRightPackages = new HashSet<String>();
+		allRightPackages.addAll(rightPackages);
+
+		// Feature - Assets
+		Set<String> rightAssets = currentSankeyLinks.stream()
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREASSET).map(SankeyItem::getTo)
+				.collect(Collectors.toSet());
+		if (rightAssets.size() > 0) {
+			SankeyNode node;
+
+			List<ChurnFeaturesPackageAssets> featuresAndAssetsChurns = sankeyFilterService
+					.getFeaturesAndAssetsChurnInFeaturesAndInAssets(featureIds, rightAssets);
+			for (ChurnFeaturesPackageAssets churnFeaturesAssets : featuresAndAssetsChurns) {
+				sankeyItem = new SankeyItem(churnFeaturesAssets.getFeatureId(),
+						ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(), churnFeaturesAssets.getChurn(),
+						SankeyLinkType.FEATUREASSET);
+				sankeyData.add(sankeyItem);
+				node = new SankeyNode(ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(),
+						churnFeaturesAssets.getCapath(), false, true, SankeyNodeType.ASSET);
+				node.setParentId(PACKAGE_PREFIX + churnFeaturesAssets.getPackageId());
+				allRightPackages.add(node.getParentId());
+				nodes.add(node);
+
+			}
+		}
+
+		// Feature - PAckages
+		if (allRightPackages.size() > 0) {
+			List<ChurnFeaturesAndPackagesGrouped> it2 = new ArrayList<>();
+			if (rightPackages.size() > 0) {
+				it2.addAll(sankeyFilterService.getFeaturesAndPackagesChurnInFeaturesAndInPackages(featureIds,
+						rightPackages));
+			}
+			it2.addAll(sankeyFilterService.getFeaturesAndPackagesChurnInFeaturesAndNotInPackages(featureIds,
+					allRightPackages));
+			for (ChurnFeaturesAndPackagesGrouped churnFeaturesPackages : it2) {
+				sankeyItem = new SankeyItem(churnFeaturesPackages.getIdfeature(),
+						PACKAGE_PREFIX + churnFeaturesPackages.getIdpackage(), churnFeaturesPackages.getChurn(),
+						SankeyLinkType.FEATUREPACKAGE);
+				sankeyData.add(sankeyItem);
+				nodes.add(new SankeyNode(PACKAGE_PREFIX + churnFeaturesPackages.getIdpackage(),
+						churnFeaturesPackages.getPackage_name(), true, false, SankeyNodeType.PACKAGE));
+
+			}
+		}
+
+		return new SankeyResponse(sankeyData, nodes);
+	}
+
+	@ResponseBody
+	@GetMapping(path = "/clear-feature-filters", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public SankeyResponse clearFeatureFilters(Model model) {
+		List<SankeyItem> sankeyInitialLinks = new ArrayList<>();
+		Set<SankeyNode> nodes = new HashSet<>();
+		mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
+		return new SankeyResponse(sankeyInitialLinks, nodes);
+	}
 }

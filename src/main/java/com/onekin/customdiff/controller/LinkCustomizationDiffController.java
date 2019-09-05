@@ -25,6 +25,7 @@ public class LinkCustomizationDiffController {
 		List<CustomsByFeatureAndCoreAsset> packageAndProductsCustomizations = linkCustomizationDiffService
 				.getPackageAndProductsCustomizations(from, to);
 		model.addAttribute("customizations", packageAndProductsCustomizations);
+		model.addAttribute("linkNodes", packageAndProductsCustomizations.get(0).getPrname() + " and "+ packageAndProductsCustomizations.get(0).getCapath());
 
 		return "links-diffs";
 	}
@@ -35,6 +36,7 @@ public class LinkCustomizationDiffController {
 		List<CustomsByFeatureAndCoreAsset> productAndAssetCustomizations = linkCustomizationDiffService
 				.getProductAndAssetCustomizations(from, to);
 		model.addAttribute("customizations", productAndAssetCustomizations);
+		model.addAttribute("linkNodes", productAndAssetCustomizations.get(0).getPrname() + " and "+ productAndAssetCustomizations.get(0).getCapath());
 		return "links-diffs";
 	}
 
@@ -44,6 +46,7 @@ public class LinkCustomizationDiffController {
 		List<CustomsByFeatureAndCoreAsset> productAndFeatureCustomizations = linkCustomizationDiffService
 				.getProductAndFeatureCustomizations(from, to);
 		model.addAttribute("customizations", productAndFeatureCustomizations);
+		model.addAttribute("linkNodes", to + " and "+ productAndFeatureCustomizations.get(0).getPrname());
 		return "links-diffs";
 	}
 
@@ -53,6 +56,7 @@ public class LinkCustomizationDiffController {
 		List<CustomsByFeatureAndCoreAsset> featureAndAssetCustomizations = linkCustomizationDiffService
 				.getFeatureAndAssetCustomizations(from, to);
 		model.addAttribute("customizations", featureAndAssetCustomizations);
+		model.addAttribute("linkNodes", from + " and "+ featureAndAssetCustomizations.get(0).getCapath());
 		return "links-diffs";
 	}
 
@@ -62,6 +66,8 @@ public class LinkCustomizationDiffController {
 		List<CustomsByFeatureAndCoreAsset> featureAndPackageCustomizations = linkCustomizationDiffService
 				.getFeatureAndPackageCustomizations(from, to);
 		model.addAttribute("customizations", featureAndPackageCustomizations);
+		model.addAttribute("linkNodes", from + " and "+ featureAndPackageCustomizations.get(0).getIdpackage());
+
 		return "links-diffs";
 	}
 

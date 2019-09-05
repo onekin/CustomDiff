@@ -1,8 +1,5 @@
 package com.onekin.customdiff.model;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.onekin.customdiff.model.enums.SankeyLinkType;
 
 public class SankeyItem {
@@ -63,24 +60,12 @@ public class SankeyItem {
 		return "[" + from + "," + to + "," + weight + "]";
 	}
 
-	public static List<SankeyItem> deleteFromListById(List<SankeyItem> sankeyData, String expandId) {
-		sankeyData.removeIf(x -> x.from.equals(expandId) | x.to.equals(expandId));
-		return sankeyData;
-
-	}
-
 	public SankeyLinkType getSankeyLinkType() {
 		return sankeyLinkType;
 	}
 
 	public void setSankeyLinkType(SankeyLinkType sankeyType) {
 		this.sankeyLinkType = sankeyType;
-	}
-
-	public static List<SankeyItem> deleteFromListByParentId(List<SankeyItem> sankeyData, List<SankeyNode> nodesToRemove) {
-		List<String> idsToRemove = nodesToRemove.stream().map(SankeyNode::getId).collect(Collectors.toList());
-		sankeyData.removeIf(x-> idsToRemove.contains(x.getFrom()) ||idsToRemove.contains(x.getTo()));
-		return sankeyData;
 	}
 
 }

@@ -331,19 +331,20 @@ group by f.idfeature, pr.idproductrelease;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `customdiff`.`churn_coreassets_and_features_by_pr`;
 USE `customdiff`;
-CREATE  OR REPLACE VIEW `churn_coreassets_and_features_by_pr` AS
+	CREATE  OR REPLACE VIEW `churn_coreassets_and_features_by_pr` AS
 
-select UUID() as 'id', ca.idcoreasset as 'idcoreasset', pr.idproductrelease as 'idproductrelease' , pr.name as 'pr_name', ca.name as 'ca_name',
-ca.path as 'ca_path', f.idfeature as 'idfeature', sum(c.lines_added + c.lines_deleted) as 'churn'
+	select UUID() as 'id', ca.idcoreasset as 'idcoreasset', pr.idproductrelease as 'idproductrelease' , pr.name as 'pr_name', ca.name as 'ca_name',
+	ca.path as 'ca_path', f.idfeature as 'idfeature', sum(c.lines_added + c.lines_deleted) as 'churn', cp.name as 'packagename', cp.idpackage as 'package_id'
 
-from customization_fact c inner join variation_point vp
-on c.idvariationpoint = vp.idvariationpoint
-inner join core_asset ca on ca.idcoreasset = vp.idcoreasset
-inner join feature_group fg on fg.id_feature_group = vp.id_feature_group 
-inner join feature_bridge fb on fb.id_feature_group = fg.id_feature_group
-inner join feature f on f.idfeature = fb.id_feature
-inner join product_release pr on pr.idproductrelease = c.idproductrelease
-group by f.idfeature, pr.idproductrelease, ca.idcoreasset;
+	from customization_fact c inner join variation_point vp
+	on c.idvariationpoint = vp.idvariationpoint
+	inner join core_asset ca on ca.idcoreasset = vp.idcoreasset
+	inner join feature_group fg on fg.id_feature_group = vp.id_feature_group 
+	inner join feature_bridge fb on fb.id_feature_group = fg.id_feature_group
+	inner join feature f on f.idfeature = fb.id_feature
+	inner join product_release pr on pr.idproductrelease = c.idproductrelease
+	inner join component_package cp on  ca.idpackage = cp.idpackage
+	group by f.idfeature, pr.idproductrelease, ca.idcoreasset;
 
 -- -----------------------------------------------------
 -- View `customdiff`.`coreassets_and_features`
@@ -369,7 +370,7 @@ CREATE  OR REPLACE VIEW `customs_by_feature_and_coreasset` AS
 select UUID() as 'id', c.idcustomization as 'idcustomization', f.idfeature as 'idfeature', ca.idcoreasset as 'idcoreasset', ca.idpackage as 'idpackage', f.idparent as 'idparentfeature', pf.name as 'parentfeaturename',
 ca.name as 'caname', ca.path as 'capath', pr.idproductrelease as 'idproductrelease' , pr.name as 'prname', c.lines_added as 'added',
 c.lines_deleted as 'deleted',
-c.custom_diff as 'custom_diff', c.message_set as 'messages', c.commit_set as 'commits', c.greater_diff as 'maindiff'
+c.custom_diff as 'custom_diff', c.message_set as 'messages', c.commit_set as 'commits', c.greater_diff as 'maindiff', vp.expression AS 'expression' 
 
 from customization_fact c inner join variation_point vp
 on c.idvariationpoint = vp.idvariationpoint
@@ -378,7 +379,7 @@ inner join feature_bridge fb on fb.id_feature_group = fg.id_feature_group
 inner join feature f on f.idfeature = fb.id_feature
 inner join parent_feature pf on pf.idparentfeature = f.idparent
 inner join product_release pr on pr.idproductrelease = c.idproductrelease
-inner join core_asset ca on ca.idcoreasset = vp.idcoreasset;
+inner join core_asset ca on ca.idcoreasset = vp.idcoreasset WHERE f.idfeature!='No Feature';
 
 -- -----------------------------------------------------
 -- View `customdiff`.`churn_parent_features_productportfolio`

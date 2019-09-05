@@ -27,6 +27,7 @@ public class CustomsByFeatureAndCoreAsset {
 	int idparentfeature;
 	String parentfeaturename;
 	int idpackage;
+	String expression;
 
 	public CustomsByFeatureAndCoreAsset() {
 	}
@@ -175,7 +176,6 @@ public class CustomsByFeatureAndCoreAsset {
 		this.parentfeaturename = parentfeaturename;
 	}
 	
-	
 
 	public int getIdpackage() {
 		return idpackage;
@@ -184,6 +184,19 @@ public class CustomsByFeatureAndCoreAsset {
 	public void setIdpackage(int idpackage) {
 		this.idpackage = idpackage;
 	}
+
+	public String getExpression() {
+		try {
+			return Formatting.decodeFromBase64(expression);
+		} catch (Exception e) {
+			return expression;
+		}	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+	
+	
 
 
 }

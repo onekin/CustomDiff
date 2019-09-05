@@ -38,22 +38,24 @@
 <body>
 	<div class="container">
 		<div class="btn-group">
-			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-				Features <span class="caret"></span>
+			<label class="btn">Filters:</label> <a class="btn dropdown-toggle"
+				data-toggle="dropdown" href="#"> Features <span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu" id="featureDropdown">
 				<li><i class="fas fa-search"></i> <input type="text"
 					placeholder="Search.." id="featureInput" class="searchInput"
 					onkeyup="filterFunction('featureInput','featureDropdown')"></li>
 				<li th:each="feature : ${features}" href="#" class="feature-config"><input
-					class="feature-checkbox" type="checkbox"
-					th:data-id="${feature.idfeature}" /><label
-					th:text="${feature.name}"></label></li>
+					class="feature-checkbox" type="checkbox" th:data-id="${feature}" /><label
+					th:text="${feature}"></label></li>
 				<li><button type="button" class="btn btn-primary float-right"
-						onClick="filterSelectedFeatures()">Apply</button></li>
+						onClick="filterSelectedFeatures()">Apply</button>
+					<button type="button" class="btn btn-primary float-right"
+						onClick="clearFeatureFilters()">Clear</button></li>
 			</ul>
+
 		</div>
-		<div class="btn-group">
+		<!-- 		<div class="btn-group">
 			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 				Products <span class="caret"></span>
 			</a>
@@ -88,11 +90,9 @@
 						onClick="filterSelectedPackages()">Apply</button></li>
 
 			</ul>
-		</div>
+		</div> -->
 	</div>
-	<div id="container">
-	
-	</div>
+	<div id="container"></div>
 	<footer class="footer">
 		<div class="container">
 			<span class="text-muted"> <img src="images/onekinLogo.png"
@@ -172,11 +172,17 @@
 		
 		var expandAndCollapse = function(){
 			$(".fa-expand-arrows-alt").click(function(event){
+					var selectedFeatures = getSelectedFeatures();
 			       	$.ajax({
-		       		type: 'GET',
-		       		url : "/nodes/"+$(this).attr("data-id"),
+		       		type: 'POST',
+		       		url : "/nodes/"+$(this).attr("data-id")+"?features="+selectedFeatures,
+		       		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType:"application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
+		       			linksData = data.sankeyItems;
+		       			nodes = data.nodes;
 		       			sankeyChart.update({
 		       			 plotOptions: {
 		     				series:{
@@ -199,11 +205,17 @@
 			    event.preventDefault();
 			});   	
 	       	$(".fa-minus-square").click(function(event){
+				var selectedFeatures = getSelectedFeatures();
 		       	$.ajax({
-		       		type: 'GET',
-		       		url : "/collapse/"+$(this).attr("data-id"),
+		       		type: 'POST',
+		       		url : "/collapse/"+$(this).attr("data-id")+"?features="+selectedFeatures,
+		       		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType:"application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
+		       			linksData = data.sankeyItems;
+		       			nodes = data.nodes;
 		       			sankeyChart.update({
 		       			 plotOptions: {
 		     				series:{
@@ -247,78 +259,7 @@
 			}
 	</script>
 
-	<script type="text/javascript">
-			function filterSelectedFeatures(){
-				var featuresCheckBoxes = document.getElementsByClassName("feature-checkbox");
-				var selectedFeatures = [];
-				for (var i = 0; i < featuresCheckBoxes.length; i++) {
-					  if(featuresCheckBoxes[i].checked){
-						  selectedFeatures.push(featuresCheckBoxes[i].getAttribute("data-id"));
-					  }
-				}
-				if(selectedFeatures.length>0){
-					var filteredNodes = nodes.filter(node => node.sankeyNodeType!="FEATURE"|| selectedFeatures.includes(node.id));
-					var filteredLinks = linksData.filter(link => !(["PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE"].includes(link.sankeyLinkType)) || selectedFeatures.includes(link.from) ||selectedFeatures.includes(link.to) );
-					updateSankey(filteredLinks,filteredNodes);
-				}else{
-					updateSankey(linksData,nodes);
-				}
-			}
-			
-			function filterSelectedPackages(){
-				var packagesCheckBoxes = document.getElementsByClassName("package-checkbox");
-				var selectedPackages = [];
-				for (var i = 0; i < packagesCheckBoxes.length; i++) {
-					  if(packagesCheckBoxes[i].checked){
-						  selectedPackages.push(packagesCheckBoxes[i].getAttribute("data-id"));
-					  }
-				}
-				if(selectedPackages.length>0){
-					var filteredNodes = nodes.filter(node => node.sankeyNodeType!="PACKAGE"|| selectedPackages.includes(node.id));
-					var filteredLinks = linksData.filter(link => !(["PACKAGEPRODUCT","FEATUREPACKAGE"].includes(link.sankeyLinkType)) || selectedPackages.includes(link.from) ||selectedPackages.includes(link.to) );
-					updateSankey(filteredLinks,filteredNodes);
-				}else{
-					updateSankey(linksData,nodes);
-				}
-			}
-			
-			
-			function filterSelectedProducts(){
-				var productsCheckBoxes = document.getElementsByClassName("product-checkbox");
-				var selectedProducts = [];
-				for (var i = 0; i < productsCheckBoxes.length; i++) {
-					  if(productsCheckBoxes[i].checked){
-						  selectedProducts.push(productsCheckBoxes[i].getAttribute("data-id"));
-					  }
-				}
-				if(selectedProducts.length>0){
-					var filteredNodes = nodes.filter(node => node.sankeyNodeType!="PRODUCT"|| selectedProducts.includes(node.id));
-					var filteredLinks = linksData.filter(link => !(["PACKAGEPRODUCT","PRODUCTFEATURE"].includes(link.sankeyLinkType)) || selectedProducts.includes(link.from) ||selectedProducts.includes(link.to) );
-					updateSankey(filteredLinks,filteredNodes);
-				}else{
-					updateSankey(linksData,nodes);
-				}
-			}
-			
-			function updateSankey(updatedData, updatedNodes){
-				sankeyChart.update({
-	       			 plotOptions: {
-	     				series:{
-	     					animation:{
-	       		        		duration: 2000
-	       		        	}
-	       				}
-	       			 },
-	       		        series: {
-	       		            data: updatedData,
-	       		            nodes: updatedNodes,
-	       		         	
-	       		        }
-      				});
-				expandAndCollapse();
-				
-			}
-		</script>
+	<script src="/js/sankey-filtering.js"></script>
 
 </body>
 </html>

@@ -16,7 +16,8 @@
 <script src="/js/diff2html.min.js"></script>
 <script src="/js/diff2html-ui.min.js"></script>
 
-
+<link rel="stylesheet" type="text/css"
+	href="/css/main.css"></link>
 
 </head>
 <body>
@@ -42,7 +43,7 @@
 							th:data-target="'#collapse'+${iter.index}" aria-expanded="true"
 							th:aria-controls="'collapse'+${iter.index}" th:inline="text">
 							FILE: [[${#strings.capitalize(customization.capath)}]] - FEATURE:
-							[[${#strings.capitalize(customization.idfeature)}]]<i
+							[[${#strings.capitalize(customization.idfeature)}]] - VP Expr: [[${customization.expression}]]<i
 								class="fas fa-caret-down"></i>
 						</button>
 					</h5>
@@ -56,6 +57,16 @@
 			</div>
 		</div>
 	</div>
+
+	<footer class="footer">
+		<div class="container">
+			<span class="text-muted"> <img src="/images/onekinLogo.png"
+				alt="Logo" style="width: 150px; height: 70px;"> Contact:
+				oscar.diaz@ehu.eus, leticia.montalvillo@ehu.eus </img>
+			</span>
+
+		</div>
+	</footer>
 
 	<script th:inline="javascript">
 			/*<![CDATA[*/

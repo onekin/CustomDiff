@@ -1,23 +1,56 @@
 package com.onekin.customdiff.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.onekin.customdiff.model.ChurnCoreAssetsAndFeaturesByProduct;
+import com.onekin.customdiff.model.ChurnPackageAndProduct;
 
 @Transactional
-public interface  ChurnCoreAssetsAndFeaturesByProductRepository extends CrudRepository<ChurnCoreAssetsAndFeaturesByProduct, Long>{
+public interface ChurnCoreAssetsAndFeaturesByProductRepository
+		extends CrudRepository<ChurnCoreAssetsAndFeaturesByProduct, String> {
 
 	Iterable<ChurnCoreAssetsAndFeaturesByProduct> getCustomsByIdproductrelease(int idproductrelease);
 
 	Iterable<ChurnCoreAssetsAndFeaturesByProduct> getCustomsByFeatureId(String idfeature);
 
-	@Query(value="SELECT new ChurnCoreAssetsAndFeaturesByProduct(c.id, c.idproductrelease, c.featureId, c.idcoreasset, "
-			+ "c.pr_name, c.ca_name, c.ca_path, c.packageId, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c where c.packageId=:idPackage GROUP BY c.idproductrelease ,c.idcoreasset")
+	@Query(value = "SELECT new ChurnCoreAssetsAndFeaturesByProduct(c.id, c.idproductrelease, c.featureId, c.idcoreasset, "
+			+ "c.pr_name, c.ca_name, c.ca_path, c.packageId, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c where c.packageId=:idPackage and featureId!='No Feature'  GROUP BY c.idproductrelease ,c.idcoreasset")
 	Iterable<ChurnCoreAssetsAndFeaturesByProduct> findByPackageIdGroupByAssetId(int idPackage);
+
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE c.featureId!='No Feature' GROUP BY c.idproductrelease ,c.packageId")
+	Iterable<ChurnPackageAndProduct> findGroupedByProductAndPackage();
+
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE c.packageId = :packageId and c.featureId!='No Feature' GROUP BY c.idproductrelease")
+	List<ChurnPackageAndProduct> findByIdPackage(Integer packageId);
+	
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE c.packageId = :packageId and c.featureId IN (:featureIds) GROUP BY c.idproductrelease")
+	List<ChurnPackageAndProduct> findByIdPackageAndFeaturesIn(Integer packageId, List<String> featureIds);
+
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE  c.featureId IN (:featureIds) AND c.packageId IN (:packageIds) GROUP BY c.idproductrelease, c.packageId")
+	List<ChurnPackageAndProduct> findByIdFeatureInAndPackageIdIn(List<String> featureIds, List<Integer> packageIds);	
+
 	
 	
+	List<ChurnCoreAssetsAndFeaturesByProduct> findByFeatureIdInAndIdcoreassetIn(List<String> featureIds, List<Integer> leftAssetsIds);
+
+	
+	@Query(value = "SELECT new ChurnCoreAssetsAndFeaturesByProduct(c.id, c.idproductrelease, c.featureId, c.idcoreasset, "
+			+ "c.pr_name, c.ca_name, c.ca_path, c.packageId, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c where c.packageId=:idPackage and c.featureId in (:featureIds) GROUP BY c.idproductrelease ,c.idcoreasset")
+	List<ChurnCoreAssetsAndFeaturesByProduct> findByPackageIdAndFeaturesInGroupByAssetId(int idPackage, List<String> featureIds);
+
+	
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE  c.featureId IN (:featureIds) AND c.packageId NOT IN (:packageIds) GROUP BY c.idproductrelease, c.packageId")
+	List<ChurnPackageAndProduct> findByIdFeatureInAndPackageIdNotIn(List<String> featureIds,
+			List<Integer> packageIds);
 
 }

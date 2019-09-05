@@ -18,6 +18,8 @@ public class ChurnCoreAssetsAndFeaturesByProduct {
 	String ca_name;
 	String ca_path;
 	int packageId;
+	@Column(name="packagename")
+	String packageName;
 	long churn;
 	
 
@@ -28,7 +30,7 @@ public class ChurnCoreAssetsAndFeaturesByProduct {
 	
 	
 	public ChurnCoreAssetsAndFeaturesByProduct(String id, int idproductrelease, String featureId, int idcoreasset,
-			String pr_name, String ca_name, String ca_path, int packageId, long churn) {
+			String pr_name, String ca_name, String ca_path, int packageId, String packageName,long churn) {
 		super();
 		this.id = id;
 		this.idproductrelease = idproductrelease;
@@ -122,6 +124,18 @@ public class ChurnCoreAssetsAndFeaturesByProduct {
 
 	public void setPackageId(int packageId) {
 		this.packageId = packageId;
+	}
+
+
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 	
 	

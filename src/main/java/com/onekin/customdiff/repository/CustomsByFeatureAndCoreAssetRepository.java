@@ -27,4 +27,6 @@ public interface CustomsByFeatureAndCoreAssetRepository extends CrudRepository<C
 
 	List<CustomsByFeatureAndCoreAsset> findByIdpackageAndIdfeature(int packageIdCleaned, String featureId);
 
+
+
 }

@@ -1,5 +1,6 @@
 package com.onekin.customdiff.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,7 +10,8 @@ import javax.persistence.Table;
 public class ChurnProductPortfolioAndFeatures{
 
 	@Id  String id;
-	String id_feature;
+	@Column(name="id_feature")
+	String idFeature;
 	String featuremodified;
 	//int id_product;
 	int id_pr;
@@ -32,12 +34,12 @@ public class ChurnProductPortfolioAndFeatures{
 
 
 
-	public String getId_feature() {
-		return id_feature;
+	public String getIdFeature() {
+		return idFeature;
 	}
 
-	public void setId_feature(String id_feature) {
-		this.id_feature = id_feature;
+	public void setIdFeature(String idFeature) {
+		this.idFeature = idFeature;
 	}
 
 	public String getFeaturemodified() {
