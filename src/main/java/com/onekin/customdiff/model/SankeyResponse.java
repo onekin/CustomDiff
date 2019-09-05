@@ -9,6 +9,11 @@ public class SankeyResponse {
 	private List<SankeyItem> sankeyItems;
 	private Set<SankeyNode> nodes;
 
+	
+	public SankeyResponse() {
+		super();
+	}
+
 	public SankeyResponse(List<SankeyItem> sankeyItems, Set<SankeyNode> nodes) {
 		super();
 		this.sankeyItems = sankeyItems;
