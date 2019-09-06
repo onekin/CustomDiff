@@ -36,94 +36,185 @@
 </style>
 </head>
 <body>
-	<div class="container">
-		<div class="btn-group">
-			<label class="btn">Filters:</label> <a class="btn dropdown-toggle"
-				data-toggle="dropdown" href="#"> Features <span class="caret"></span>
-			</a>
-			<ul class="dropdown-menu" id="featureDropdown">
-				<li><i class="fas fa-search"></i> <input type="text"
-					placeholder="Search.." id="featureInput" class="searchInput"
-					onkeyup="filterFunction('featureInput','featureDropdown')"></li>
-				<li th:each="feature : ${features}" href="#" class="feature-config"><input
-					class="feature-checkbox" type="checkbox" th:data-id="${feature}" /><label
-					th:text="${feature}"></label></li>
-				<li><button type="button" class="btn btn-primary float-right"
-						onClick="filterSelectedFeatures()">Apply</button>
-					<button type="button" class="btn btn-primary float-right"
-						onClick="clearFeatureFilters()">Clear</button></li>
-			</ul>
 
-		</div>
-		<!-- 		<div class="btn-group">
-			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-				Products <span class="caret"></span>
-			</a>
+	<header class="navbar navbar-light bg-faded">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<img src="/images/customDiffLogo.png">
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+							Analysis Configuration <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu" id="analysisConfigDropdown">
+							<li class="feature-config"><a href="#"
+								onclick='openSaveModal()'>Save Configuration<i
+									class="far fa-save"></i>
+							</a></li>
+							<li class="feature-config"><a href="#"
+								onclick="openConfigOpenModal()">Open Configuration<i
+									class="far fa-folder-open"></i>
+							</a></li>
 
-			<ul class="dropdown-menu" id="productDropdown">
-				<li><i class="fas fa-search"></i> <input type="text"
-					placeholder="Search.." id="productInput" class="searchInput"
-					onkeyup="filterFunction('productInput','productDropdown')"></li>
-				<li th:each="product : ${products}" href="#" class="feature-config"><input
-					type="checkbox" class="product-checkbox"
-					th:data-id="${'pr-'+product.idproductrelease}" /><label
-					th:text="${product.name}"></label></li>
-				<li><button type="button" class="btn btn-primary float-right"
-						onClick="filterSelectedProducts()">Apply</button></li>
-			</ul>
-		</div>
-		<div class="btn-group">
-			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-				Packages <span class="caret"></span>
-			</a>
-			<ul class="dropdown-menu" id="packageDropdown">
-				<li><i class="fas fa-search"></i> <input type="text"
-					placeholder="Search.." id="packageInput" class="searchInput"
-					onkeyup="filterFunction('packageInput','packageDropdown')"></li>
+						</ul>
 
-				<li th:each="componentPackage : ${componentPackages}" href="#"
-					class="componentPackage-config"><input
-					class="package-checkbox" type="checkbox"
-					th:data-id="${'pck-'+componentPackage.idpackage}" /><label
-					th:text="${componentPackage.name}"></label></li>
-				<li><button type="button" class="btn btn-primary float-right"
-						onClick="filterSelectedPackages()">Apply</button></li>
 
-			</ul>
-		</div> -->
+					</div>
+
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /.container-fluid -->
+		</nav>
+	</header>
+	<div class="btn-group">
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+			Features <span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu" id="featureDropdown">
+			<li><i class="fas fa-search"></i> <input type="text"
+				placeholder="Search.." id="featureInput" class="searchInput"
+				onkeyup="filterFunction('featureInput','featureDropdown')"></li>
+			<li th:each="feature : ${features}" href="#" class="feature-config"><input
+				class="feature-checkbox" type="checkbox" th:data-id="${feature}" /><label
+				th:text="${feature}"></label></li>
+			<li><button type="button" class="btn btn-primary float-right"
+					onClick="filterSelectedFeatures()">Apply</button>
+				<button type="button" class="btn btn-primary float-right"
+					onClick="clearFeatureFilters()">Clear</button></li>
+		</ul>
+
+
 	</div>
 	<div id="container"></div>
-	<footer class="footer">
-		<div class="container">
-			<span class="text-muted"> <img src="images/onekinLogo.png"
-				alt="Logo" style="width: 150px; height: 70px;"> Contact:
-				oscar.diaz@ehu.eus, leticia.montalvillo@ehu.eus </img>
-			</span>
-
+	<div id="hallmarkModal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Analysis Hallmark</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<i class="fas fa-pencil prefix grey-text"></i> <label
+						data-error="wrong" data-success="right" for="form8">Your
+						analysis hallmark</label>
+					<textarea type="text" id="form8" class="md-textarea form-control"
+						rows="4"></textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
 		</div>
-	</footer>
+	</div>
+	<div id="saveConfigModal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Save Analysis Configuration</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<i class="fas fa-pencil prefix grey-text"></i> <label
+						data-error="wrong" data-success="right" for="form8">Save
+						as...</label> <input type="text" id="saveConfigName"></input>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="openConfigModal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Save Analysis Configuration</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<i class="fas fa-pencil prefix grey-text"></i> <label
+						data-error="wrong" data-success="right" for="form8">Open
+						... </label>
+					<div class="list-group config-options">
+						<button type="button"
+							class="list-group-item list-group-item-action">Config 1</button>
+						<button type="button"
+							class="list-group-item list-group-item-action">Config 2</button>
+						<button type="button"
+							class="list-group-item list-group-item-action">Config 3</button>
+						<button type="button"
+							class="list-group-item list-group-item-action">Config 4</button>
+						<button type="button"
+							class="list-group-item list-group-item-action">Config 5</button>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary">Open
+							Configuration</button>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer class="footer">
+			<div class="container">
+				<span class="text-muted"> <img src="images/onekinLogo.png"
+					alt="Logo" style="width: 150px; height: 70px;"> Contact:
+					oscar.diaz@ehu.eus, raul.medeiros@ehu.eus </img>
+				</span>
+
+			</div>
+		</footer>
 
 
 
-	<script type="text/javascript" th:inline="javascript">
+		<script type="text/javascript" th:inline="javascript">
 		var linksData = [[${sankeyData}]];
 		var nodes = [[${nodes}]];
 		var sankeyChart = Highcharts.chart('container', {
+    	credits:{
+		  		enabled:false
+ 
+        },
+		chart: {
+		        type: 'sankey'
+		        
+		},
 		 plotOptions: {
 				series:{
+			        borderWidth: 0,
+
 					 events: {
 			                click: function (event) {
 								   		if (event.point.isNode){
-								   			window.location.href = window.location.href+"node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id;
+								   			window.open(window.location.href+"node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
 								   		}else{
-								   			window.location.href = window.location.href+"link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to;
+								   			window.open(window.location.href+"link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to);
 								   		}
 						   		}
 			            }
 				},
 		        sankey: {
 		        	nodePadding: 25,
-		        	
 		        	dataLabels: {
 		                style: {
 		                  color: 'black',
@@ -142,16 +233,9 @@
 	                    	   	   }
 	                         
 	                       }
-		        	},
-		        	dragDrop:{
-		        		draggableY:true,
-		        		draggableX:true
 		        	}
 		        }
 		    },
-			title : {
-				text : 'CustomDiff Diagram'  
-			},
 			series : [ {
 				keys : [ 'from', 'to', 'weight' ],
 				cursor: "pointer",
@@ -159,14 +243,35 @@
 				type : 'sankey',
 				name : 'Customization effort',
 		        nodes: nodes,
+		        borderWidth:0
 			} ],
-			
-			 chart: {
-			        type: 'sankey',
-			        scrollablePlotArea: {
-			            scrollPositionY: 1
-			        }
-			    },
+
+			title : {
+				text : ''  
+			},
+
+		    exporting: {
+		        menuItemDefinitions: {
+		            hallmark: {
+		                onclick: function () {
+		                	$("#hallmarkModal").modal("show");
+
+		                },
+		                text: 'Analysis Hallmark'
+		            },
+		            report: {
+		                onclick: function () {
+		                    alert("This functionality is not yet supported")
+		                },
+		                text: 'Save Report'
+		            }
+		        },
+		        buttons: {
+		            contextButton: {
+		                menuItems: ['viewFullscreen', 'hallmark','report']
+		            }
+		        }
+		    }
 
 		});
 		
@@ -257,9 +362,16 @@
 			    }
 			  }
 			}
+	      
+	      function openSaveModal(){
+          	$("#saveConfigModal").modal("show");
+	      }
+	      
+	      function openConfigOpenModal(){
+	          	$("#openConfigModal").modal("show");
+		      }
 	</script>
 
-	<script src="/js/sankey-filtering.js"></script>
-
+		<script src="/js/sankey-filtering.js"></script>
 </body>
 </html>

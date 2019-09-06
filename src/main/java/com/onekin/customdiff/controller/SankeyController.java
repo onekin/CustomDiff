@@ -50,6 +50,8 @@ public class SankeyController {
 	@Autowired
 	private EntityService entityService;
 
+	
+	
 	@GetMapping("/")
 	public String loadInitialData(Model model) {
 		model.addAttribute("features", entityService.getCustomizedFeatures());
@@ -60,6 +62,15 @@ public class SankeyController {
 		model.addAttribute("nodes", nodes);
 		return "index";
 	}
+	/*
+	 * @GetMapping("/") public String loadInitialData(Model model) {
+	 * model.addAttribute("features", entityService.getCustomizedFeatures());
+	 * List<SankeyItem> sankeyInitialLinks = new ArrayList<>(); Set<SankeyNode>
+	 * nodes = new HashSet<>();
+	 * mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
+	 * model.addAttribute("sankeyData", sankeyInitialLinks);
+	 * model.addAttribute("nodes", nodes); return "index"; }
+	 */
 
 	@ResponseBody
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
