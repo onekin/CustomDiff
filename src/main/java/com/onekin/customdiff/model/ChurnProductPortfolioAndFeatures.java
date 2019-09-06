@@ -18,10 +18,18 @@ public class ChurnProductPortfolioAndFeatures{
 	String pr_name;
 	int added;
 	int deleted;
-	int churn;
+	long churn;
 	
 	public ChurnProductPortfolioAndFeatures() {
 		
+	}
+
+	public ChurnProductPortfolioAndFeatures( int id_pr,
+			String pr_name, long churn) {
+		super();
+		this.id_pr = id_pr;
+		this.pr_name = pr_name;
+		this.churn = churn;
 	}
 
 	public String getId() {
@@ -82,11 +90,11 @@ public class ChurnProductPortfolioAndFeatures{
 		this.deleted = deleted;
 	}
 
-	public int getChurn() {
+	public long getChurn() {
 		return churn;
 	}
 
-	public void setChurn(int churn) {
+	public void setChurn(long churn) {
 		this.churn = churn;
 	}
 

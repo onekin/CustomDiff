@@ -25,7 +25,7 @@ import com.onekin.customdiff.model.ChurnFeaturesAndPackagesGrouped;
 import com.onekin.customdiff.model.ChurnFeaturesPackageAssets;
 import com.onekin.customdiff.model.ChurnPackageAndProduct;
 import com.onekin.customdiff.model.ChurnProductPortfolioAndFeatures;
-import com.onekin.customdiff.model.SankeyItem;
+import com.onekin.customdiff.model.SankeyLink;
 import com.onekin.customdiff.model.SankeyNode;
 import com.onekin.customdiff.model.SankeyResponse;
 import com.onekin.customdiff.model.enums.SankeyLinkType;
@@ -50,18 +50,17 @@ public class SankeyController {
 	@Autowired
 	private EntityService entityService;
 
-	
-	
 	@GetMapping("/")
 	public String loadInitialData(Model model) {
 		model.addAttribute("features", entityService.getCustomizedFeatures());
-		List<SankeyItem> sankeyInitialLinks = new ArrayList<>();
+		List<SankeyLink> sankeyInitialLinks = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
 		mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
 		model.addAttribute("sankeyData", sankeyInitialLinks);
 		model.addAttribute("nodes", nodes);
 		return "index";
 	}
+
 	/*
 	 * @GetMapping("/") public String loadInitialData(Model model) {
 	 * model.addAttribute("features", entityService.getCustomizedFeatures());
@@ -71,6 +70,41 @@ public class SankeyController {
 	 * model.addAttribute("sankeyData", sankeyInitialLinks);
 	 * model.addAttribute("nodes", nodes); return "index"; }
 	 */
+
+	@ResponseBody
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/product/{expandId}")
+	public SankeyResponse expandProduct(@PathVariable(name = "expandId") String expandId,
+			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
+
+		if (expandId.equalsIgnoreCase("ALL-PR")) {
+			return mainService.expandAggregatedPackage(sankeyResponse);
+		} else {
+		
+		}
+
+		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
+
+	}
+	
+	
+	@ResponseBody
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/product/{expandId}")
+	public SankeyResponse expandParentFeature(@PathVariable(name = "expandId") String expandId,
+			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
+
+		if (expandId.equalsIgnoreCase("ALL-F")) {
+			return mainService.expandAggregatedParentFeature(sankeyResponse);
+		} else {
+		
+		}
+
+		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
+
+	}
+	
+	
 
 	@ResponseBody
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
@@ -150,15 +184,15 @@ public class SankeyController {
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, path = "/filter-features")
 	public SankeyResponse filterSankeyByFeatures(@RequestParam(name = "features") List<String> featureIds,
-			HttpSession session, @RequestBody List<SankeyItem> currentSankeyLinks) {
-		List<SankeyItem> sankeyData = new ArrayList<>();
+			HttpSession session, @RequestBody List<SankeyLink> currentSankeyLinks) {
+		List<SankeyLink> sankeyData = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
 
-		SankeyItem sankeyItem;
+		SankeyLink sankeyLink;
 
 		// Calculate left package ids to maintain the expand and collapse filters
 		Set<String> leftPackages = currentSankeyLinks.stream()
-				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.PACKAGEPRODUCT).map(SankeyItem::getFrom)
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.PACKAGEPRODUCT).map(SankeyLink::getFrom)
 				.collect(Collectors.toSet());
 
 		// Calculate all the package ids to find possible new packages and maintain
@@ -168,7 +202,7 @@ public class SankeyController {
 
 		// Calculate left assets ids to maintain the expand and collapse filters
 		Set<String> leftAssets = currentSankeyLinks.stream()
-				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.ASSETPRODUCT).map(SankeyItem::getFrom)
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.ASSETPRODUCT).map(SankeyLink::getFrom)
 				.collect(Collectors.toSet());
 
 		// Asset - Product
@@ -178,10 +212,10 @@ public class SankeyController {
 			SankeyNode node;
 			for (ChurnCoreAssetsAndFeaturesByProduct churnCoreAssetsAndFeaturesByProduct : it4) {
 
-				sankeyItem = new SankeyItem(ASSET_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdcoreasset() + "'",
+				sankeyLink = new SankeyLink(ASSET_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdcoreasset() + "'",
 						PRODUCT_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdproductrelease(),
 						churnCoreAssetsAndFeaturesByProduct.getChurn(), SankeyLinkType.ASSETPRODUCT);
-				sankeyData.add(sankeyItem);
+				sankeyData.add(sankeyLink);
 				node = new SankeyNode(ASSET_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdcoreasset() + "'",
 						churnCoreAssetsAndFeaturesByProduct.getCa_path(), false, true, SankeyNodeType.ASSET);
 				node.setParentId(PACKAGE_PREFIX + churnCoreAssetsAndFeaturesByProduct.getPackageId() + "'");
@@ -204,10 +238,10 @@ public class SankeyController {
 
 			for (ChurnPackageAndProduct churnAssetsProducts : it3) {
 
-				sankeyItem = new SankeyItem(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
+				sankeyLink = new SankeyLink(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
 						PRODUCT_PREFIX + churnAssetsProducts.getIdProductRelease(), churnAssetsProducts.getChurn(),
 						SankeyLinkType.PACKAGEPRODUCT);
-				sankeyData.add(sankeyItem);
+				sankeyData.add(sankeyLink);
 
 				nodes.add(new SankeyNode(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
 						churnAssetsProducts.getPackageName(), true, false, SankeyNodeType.PACKAGE));
@@ -224,16 +258,16 @@ public class SankeyController {
 		while (it.hasNext()) {
 			churnProdFeature = it.next();
 			if (!churnProdFeature.getIdFeature().equals("No Feature")) {
-				sankeyItem = new SankeyItem(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+				sankeyLink = new SankeyLink(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
 						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
-				sankeyData.add(sankeyItem);
+				sankeyData.add(sankeyLink);
 				nodes.add(new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
 						false, SankeyNodeType.FEATURE));
 			}
 		}
 
 		Set<String> rightPackages = currentSankeyLinks.stream()
-				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREPACKAGE).map(SankeyItem::getTo)
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREPACKAGE).map(SankeyLink::getTo)
 				.collect(Collectors.toSet());
 		// Calculate all the package ids to find possible new packages and maintain
 		// expand and collapse filters
@@ -242,7 +276,7 @@ public class SankeyController {
 
 		// Feature - Assets
 		Set<String> rightAssets = currentSankeyLinks.stream()
-				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREASSET).map(SankeyItem::getTo)
+				.filter(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREASSET).map(SankeyLink::getTo)
 				.collect(Collectors.toSet());
 		if (rightAssets.size() > 0) {
 			SankeyNode node;
@@ -250,10 +284,10 @@ public class SankeyController {
 			List<ChurnFeaturesPackageAssets> featuresAndAssetsChurns = sankeyFilterService
 					.getFeaturesAndAssetsChurnInFeaturesAndInAssets(featureIds, rightAssets);
 			for (ChurnFeaturesPackageAssets churnFeaturesAssets : featuresAndAssetsChurns) {
-				sankeyItem = new SankeyItem(churnFeaturesAssets.getFeatureId(),
+				sankeyLink = new SankeyLink(churnFeaturesAssets.getFeatureId(),
 						ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(), churnFeaturesAssets.getChurn(),
 						SankeyLinkType.FEATUREASSET);
-				sankeyData.add(sankeyItem);
+				sankeyData.add(sankeyLink);
 				node = new SankeyNode(ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(),
 						churnFeaturesAssets.getCapath(), false, true, SankeyNodeType.ASSET);
 				node.setParentId(PACKAGE_PREFIX + churnFeaturesAssets.getPackageId());
@@ -273,10 +307,10 @@ public class SankeyController {
 			it2.addAll(sankeyFilterService.getFeaturesAndPackagesChurnInFeaturesAndNotInPackages(featureIds,
 					allRightPackages));
 			for (ChurnFeaturesAndPackagesGrouped churnFeaturesPackages : it2) {
-				sankeyItem = new SankeyItem(churnFeaturesPackages.getIdfeature(),
+				sankeyLink = new SankeyLink(churnFeaturesPackages.getIdfeature(),
 						PACKAGE_PREFIX + churnFeaturesPackages.getIdpackage(), churnFeaturesPackages.getChurn(),
 						SankeyLinkType.FEATUREPACKAGE);
-				sankeyData.add(sankeyItem);
+				sankeyData.add(sankeyLink);
 				nodes.add(new SankeyNode(PACKAGE_PREFIX + churnFeaturesPackages.getIdpackage(),
 						churnFeaturesPackages.getPackage_name(), true, false, SankeyNodeType.PACKAGE));
 
@@ -289,7 +323,7 @@ public class SankeyController {
 	@ResponseBody
 	@GetMapping(path = "/clear-feature-filters", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public SankeyResponse clearFeatureFilters(Model model) {
-		List<SankeyItem> sankeyInitialLinks = new ArrayList<>();
+		List<SankeyLink> sankeyInitialLinks = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
 		mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
 		return new SankeyResponse(sankeyInitialLinks, nodes);

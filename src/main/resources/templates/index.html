@@ -225,9 +225,9 @@
 	                       enabled: true,
 	                       nodeFormatter: function () {
 	                    	   	   if(this.point.expandable==true){
-	                               		return this.point.name + '<i class="fas fa-expand-arrows-alt" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'"></i>';
+	                               		return this.point.name + '<i class="fas fa-expand-arrows-alt" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>';
 	                    	   	   }else if(this.point.collapsable==true){
-	                    	   			return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'"></i>';
+	                    	   			return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
 	                    	   	   }else{
 	                    	   			return this.point.name
 	                    	   	   }
@@ -275,94 +275,7 @@
 
 		});
 		
-		var expandAndCollapse = function(){
-			$(".fa-expand-arrows-alt").click(function(event){
-					var selectedFeatures = getSelectedFeatures();
-			       	$.ajax({
-		       		type: 'POST',
-		       		url : "/nodes/"+$(this).attr("data-id")+"?features="+selectedFeatures,
-		       		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
-		       		dataType: "json",
-		       		contentType:"application/json",
-		       		accept: "application/json",
-		       		success: function(data) {
-		       			linksData = data.sankeyItems;
-		       			nodes = data.nodes;
-		       			sankeyChart.update({
-		       			 plotOptions: {
-		     				series:{
-		     					animation:{
-		       		        		duration: 2000
-		       		        	}
-		       				}
-		       			 },
-		       		        series: {
-		       		            data: data.sankeyItems,
-		       		            nodes: data.nodes,
-		       		         	
-		       		        }
-	       				});
-		       			expandAndCollapse();
-		            }
-		       		
-		       	})
-		       	event.stopPropagation();
-			    event.preventDefault();
-			});   	
-	       	$(".fa-minus-square").click(function(event){
-				var selectedFeatures = getSelectedFeatures();
-		       	$.ajax({
-		       		type: 'POST',
-		       		url : "/collapse/"+$(this).attr("data-id")+"?features="+selectedFeatures,
-		       		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
-		       		dataType: "json",
-		       		contentType:"application/json",
-		       		accept: "application/json",
-		       		success: function(data) {
-		       			linksData = data.sankeyItems;
-		       			nodes = data.nodes;
-		       			sankeyChart.update({
-		       			 plotOptions: {
-		     				series:{
-		     					animation:{
-		       		        		duration: 2000
-		       		        			  }
-		       					   }
-		       				 },
-		       		        series: {
-		       		            data: data.sankeyItems,
-		       		            nodes: data.nodes,
-		       		         	
-		       		        }
-	       				});
-		       			expandAndCollapse();
-		            }
-		       		
-	       		});   	
-		       	event.stopPropagation();
-			    event.preventDefault(); 	
-			});
-		}
-		expandAndCollapse();
 		
-	      
-	      
-	      function filterFunction(myinput,mydropdown) {
-			  var input, filter, ul, li, a, i;
-			  input = document.getElementById(myinput);
-			  filter = input.value.toUpperCase();
-			  ul = document.getElementById(mydropdown);
-			  a = ul.getElementsByTagName("li");
-			  for (i = 1; i < a.length; i++) {
-			    txtValue = a[i].getElementsByTagName('label')[0].textContent || a[i].getElementsByTagName('label')[0].innerText;
-			    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-			      a[i].style.display = "";
-			    } else {
-			      a[i].style.display = "none";
-			    }
-			  }
-			}
-	      
 	      function openSaveModal(){
           	$("#saveConfigModal").modal("show");
 	      }

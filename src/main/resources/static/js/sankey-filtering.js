@@ -1,4 +1,101 @@
-	
+	var expandAndCollapse = function(){
+			$(".fa-expand-arrows-alt").click(function(event){
+				var selectedFeatures = getSelectedFeatures();
+				var urlString;
+				if($(this).attr("data-type").toUpperCase()=="PRODUCT"){
+				    urlString = "/expand/product/"+$(this).attr("data-id")+"?features="+selectedFeatures;
+				}else if($(this).attr("data-type").toUpperCase()=="PRODUCT"){
+					//CAMBIAR POR PARENT FEATURE
+				    urlString = "/expand/parent-feature/"+$(this).attr("data-id")+"?features="+selectedFeatures;
+				}else{
+					urlString = "/nodes/"+$(this).attr("data-id")+"?features="+selectedFeatures
+				}
+		       	$.ajax({
+		       		type: 'POST',
+			       	url : urlString,
+		    		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
+		    		dataType: "json",
+		    		contentType:"application/json",
+			       	accept: "application/json",
+		     		success: function(data) {
+		       			linksData = data.sankeyItems;
+		       			nodes = data.nodes;
+		       			sankeyChart.update({
+			       			 plotOptions: {
+			     				series:{
+			     					animation:{
+			       		        		duration: 2000
+			       		        	}
+			       				}
+			       			 },
+		       		        series: {
+			       		            data: data.sankeyItems,
+			       		            nodes: data.nodes,
+			       		         	
+		       		        }
+	       				});
+		       			expandAndCollapse();
+			            }
+			       		
+			       	});
+					
+		       	event.stopPropagation();
+			    event.preventDefault();
+			});   	
+	       	$(".fa-minus-square").click(function(event){
+				var selectedFeatures = getSelectedFeatures();
+		       	$.ajax({
+		       		type: 'POST',
+		       		url : "/collapse/"+$(this).attr("data-id")+"?features="+selectedFeatures,
+		       		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType:"application/json",
+		       		accept: "application/json",
+		       		success: function(data) {
+		       			linksData = data.sankeyItems;
+		       			nodes = data.nodes;
+		       			sankeyChart.update({
+		       			 plotOptions: {
+		     				series:{
+		     					animation:{
+		       		        		duration: 2000
+		       		        			  }
+		       					   }
+		       				 },
+		       		        series: {
+		       		            data: data.sankeyItems,
+		       		            nodes: data.nodes,
+		       		         	
+		       		        }
+	       				});
+		       			expandAndCollapse();
+		            }
+		       		
+	       		});   	
+		       	event.stopPropagation();
+			    event.preventDefault(); 	
+			});
+		}
+		expandAndCollapse();
+		
+	      
+	      
+	      function filterFunction(myinput,mydropdown) {
+			  var input, filter, ul, li, a, i;
+			  input = document.getElementById(myinput);
+			  filter = input.value.toUpperCase();
+			  ul = document.getElementById(mydropdown);
+			  a = ul.getElementsByTagName("li");
+			  for (i = 1; i < a.length; i++) {
+			    txtValue = a[i].getElementsByTagName('label')[0].textContent || a[i].getElementsByTagName('label')[0].innerText;
+			    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+			      a[i].style.display = "";
+			    } else {
+			      a[i].style.display = "none";
+			    }
+			  }
+			}
+	      
 			function getSelectedFeatures(){
 		
 				var featuresCheckBoxes = document.getElementsByClassName("feature-checkbox");

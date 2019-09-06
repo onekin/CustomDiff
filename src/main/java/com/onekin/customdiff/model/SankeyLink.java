@@ -2,18 +2,18 @@ package com.onekin.customdiff.model;
 
 import com.onekin.customdiff.model.enums.SankeyLinkType;
 
-public class SankeyItem {
+public class SankeyLink {
 
 	private String from;
 	private String to;
 	private long weight;
 	private SankeyLinkType sankeyLinkType;
 
-	public SankeyItem() {
+	public SankeyLink() {
 		super();
 	}
 
-	public SankeyItem(String from, String to, int weight, SankeyLinkType sankeyType) {
+	public SankeyLink(String from, String to, int weight, SankeyLinkType sankeyType) {
 		super();
 		this.from = from;
 		this.to = to;
@@ -22,7 +22,7 @@ public class SankeyItem {
 
 	}
 
-	public SankeyItem(String from, String to, long weight, SankeyLinkType sankeyType) {
+	public SankeyLink(String from, String to, long weight, SankeyLinkType sankeyType) {
 		super();
 		this.from = from;
 		this.to = to;
