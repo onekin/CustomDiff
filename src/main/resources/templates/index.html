@@ -24,9 +24,8 @@
 
 <style type="text/css">
 #container {
-	width: 80vw;
-	margin: 1em auto;
-	border: 1px solid silver;
+	width: 90vw;
+	margin-left: 2em;
 	height: 80vh;
 }
 
@@ -42,7 +41,7 @@
 			<div class="container-fluid">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
-					<img src="/images/customDiffLogo.png">
+					<a href="/"><img src="/images/customDiffLogo.png"></a>
 					<div class="btn-group">
 						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 							Analysis Configuration <span class="caret"></span>
@@ -71,6 +70,30 @@
 			<!-- /.container-fluid -->
 		</nav>
 	</header>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-1"></div>
+			<div class="col-4">
+				<button class="btn show-packages btn-outline-dark"
+					onclick="showLeftPackages(this)">
+					<i class="fas fa-chevron-circle-left left"
+						title="Show Assets-Products effort"></i><span>Show
+						Left Packages</span>
+				</button>
+			</div>
+			<div class="col-3"></div>
+			<div class="col-4">
+				<button class="btn show-packages btn-outline-dark"
+					onclick="showRightPackages(this)">
+					<span>Show Right Packages</span><i
+						class="fas fa-chevron-circle-right right"
+						title="Show Feature-Assets effort"></i>
+				</button>
+			</div>
+
+
+		</div>
+	</div>
 	<div class="btn-group">
 		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 			Features <span class="caret"></span>
@@ -175,19 +198,20 @@
 				</div>
 			</div>
 		</div>
-		<footer class="footer">
-			<div class="container">
-				<span class="text-muted"> <img src="images/onekinLogo.png"
-					alt="Logo" style="width: 150px; height: 70px;"> Contact:
-					oscar.diaz@ehu.eus, raul.medeiros@ehu.eus </img>
-				</span>
+	</div>
+	<footer class="footer">
+		<div class="container">
+			<span class="text-muted"> <img src="images/onekinLogo.png"
+				alt="Logo" style="width: 110px; height: 60px;"> Contact:
+				oscar.diaz@ehu.eus, raul.medeiros@ehu.eus </img>
+			</span>
 
-			</div>
-		</footer>
+		</div>
+	</footer>
 
 
 
-		<script type="text/javascript" th:inline="javascript">
+	<script type="text/javascript" th:inline="javascript">
 		var linksData = [[${sankeyData}]];
 		var nodes = [[${nodes}]];
 		var sankeyChart = Highcharts.chart('container', {
@@ -196,7 +220,10 @@
  
         },
 		chart: {
-		        type: 'sankey'
+		        type: 'sankey',
+		        spacingBottom: 15,
+		        spacingTop: 30,
+
 		        
 		},
 		 plotOptions: {
@@ -224,8 +251,11 @@
 	                	   useHTML: true,
 	                       enabled: true,
 	                       nodeFormatter: function () {
-	                    	   	   if(this.point.expandable==true){
-	                               		return this.point.name + '<i class="fas fa-expand-arrows-alt" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+	                       		   if(this.point.expandable==true && this.point.collapsable==true){
+	                       			return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>'+
+	                       			'<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+                    			   }else if(this.point.expandable==true){
+	                               		return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>';
 	                    	   	   }else if(this.point.collapsable==true){
 	                    	   			return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
 	                    	   	   }else{
@@ -271,6 +301,12 @@
 		                menuItems: ['viewFullscreen', 'hallmark','report']
 		            }
 		        }
+		    },
+		    
+		    navigation: {
+		        buttonOptions: {
+		            y: -25
+		        }
 		    }
 
 		});
@@ -285,6 +321,6 @@
 		      }
 	</script>
 
-		<script src="/js/sankey-filtering.js"></script>
+	<script src="/js/sankey-filtering.js"></script>
 </body>
 </html>

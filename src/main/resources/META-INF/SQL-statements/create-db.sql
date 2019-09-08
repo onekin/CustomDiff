@@ -317,7 +317,7 @@ USE `customdiff`;
 CREATE  OR REPLACE VIEW `churn_productportfolio_features` AS
 
 select UUID() as 'id',f.idfeature as 'id_feature' ,f.name as 'featuremodified', pr.idproductrelease as 'id_pr', pr.name as 'pr_name',
- sum(c.lines_added) as 'added', sum(c.lines_deleted) as 'deleted', sum(c.lines_added+c.lines_deleted) as 'churn'
+ sum(c.lines_added) as 'added', sum(c.lines_deleted) as 'deleted', sum(c.lines_added+c.lines_deleted) as 'churn', f.idparent as 'id_parent_feature'
 from customization_fact c inner join variation_point vp
 on c.idvariationpoint = vp.idvariationpoint
 inner join feature_group fg on fg.id_feature_group = vp.id_feature_group 

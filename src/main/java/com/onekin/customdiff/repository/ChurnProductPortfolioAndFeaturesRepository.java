@@ -15,11 +15,13 @@ public interface ChurnProductPortfolioAndFeaturesRepository
 
 	Iterable<ChurnProductPortfolioAndFeatures> findByIdFeatureIn(List<String> featureIds);
 
-	@Query("Select SUM(c.churn) from ChurnProductPortfolioAndFeatures c ")
+	@Query("Select SUM(c.churn) from ChurnProductPortfolioAndFeatures c where c.idFeature!='No Feature'")
 	Integer getAgregatedChurn();
 	
 	
 	@Query("Select new ChurnProductPortfolioAndFeatures( c.id_pr, c.pr_name, SUM(c.churn)) from ChurnProductPortfolioAndFeatures c where c.idFeature!='No Feature' group by c.id_pr")
 	List<ChurnProductPortfolioAndFeatures> findAllAggregatedInFeature();
+
+	List<ChurnProductPortfolioAndFeatures> findByParentFeatureId(int parentId); 
 
 }

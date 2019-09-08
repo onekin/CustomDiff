@@ -1,8 +1,8 @@
 package com.onekin.customdiff.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
@@ -131,8 +131,8 @@ public class Formatting {
 		return text;
 	}
 	
-	public static List<Integer> cleanListOfIds(Set<String> dirtyIds){
-		List<Integer> cleanIds = new ArrayList<>();
+	public static Set<Integer> cleanListOfIds(Set<String> dirtyIds){
+		Set<Integer> cleanIds = new HashSet<>();
 		for(String dirtyId: dirtyIds) {
 			dirtyId = dirtyId.split("-")[1];
 			dirtyId = dirtyId.replace("'", "");

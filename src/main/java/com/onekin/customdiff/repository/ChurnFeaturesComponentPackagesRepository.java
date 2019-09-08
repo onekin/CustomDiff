@@ -1,6 +1,7 @@
 package com.onekin.customdiff.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -18,17 +19,17 @@ public interface ChurnFeaturesComponentPackagesRepository extends CrudRepository
 
 	Iterable<ChurnFeaturesComponentPackages> getCustomsByIdfeature(String idfeature);
 
-	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c GROUP BY c.idfeature, c.idpackage")
+	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idfeature!='No Feature' GROUP BY c.idfeature, c.idpackage")
 	Iterable<ChurnFeaturesAndPackagesGrouped> getCustomsGroupByFeatures();
 
 	List<ChurnFeaturesComponentPackages> findByIdpackage(int packageId);
 
 	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idfeature in (:featureIds)GROUP BY c.idfeature, c.idpackage")
-	Iterable<ChurnFeaturesAndPackagesGrouped> findByIdfeatureIn(@Param("featureIds") List<String> featureIds);
+	Iterable<ChurnFeaturesAndPackagesGrouped> findByIdfeatureIn(@Param("featureIds") Set<String> featureIds);
 
 	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idfeature in (:featureIds) AND c.idpackage in (:packageIds) GROUP BY c.idfeature, c.idpackage")
 	List<ChurnFeaturesAndPackagesGrouped> findByIdfeatureInAndIdpackageIn(@Param("featureIds") List<String> featureIds,
-			@Param("packageIds") List<Integer> packageIds);
+			@Param("packageIds") Set<Integer> rightPackageIds);
 
 	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idfeature!='No Feature' and c.idpackage= :idPackage GROUP BY c.idfeature")
 	List<ChurnFeaturesAndPackagesGrouped> findByIdPackageGroupByFeatures(@Param("idPackage") Integer idPackage);
@@ -39,6 +40,6 @@ public interface ChurnFeaturesComponentPackagesRepository extends CrudRepository
 
 	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idfeature in (:featureIds) AND c.idpackage not in (:packageIds) GROUP BY c.idfeature, c.idpackage")
 	List<ChurnFeaturesAndPackagesGrouped> findByIdfeatureInAndNotIdpackageIn(@Param("featureIds") List<String> featureIds,
-			@Param("packageIds") List<Integer> packageIds);
+			@Param("packageIds") Set<Integer> rightPackageIds);
 
 }

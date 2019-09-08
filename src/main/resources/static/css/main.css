@@ -1,8 +1,12 @@
 .footer {
 	position: absolute;
-	bottom: 0;
-	width: 100%;
-	height: 60px; /* Height of the footer */
+	bottom: 1%;
+	width: 7%;
+	right: 17px;
+}
+
+span.text-muted {
+	font-size: 0.7em;
 }
 
 .fa-search {
@@ -13,14 +17,14 @@
 	color: #0000004d;
 }
 
-.fa-expand-arrows-alt {
+.fa-plus-square {
 	color: black;
 	margin-left: 5px;
 	font-size: 25px;
 	cursor: pointer;
 }
 
-.fa-expand-arrows-alt:hover {
+.fa-plus-square:hover {
 	font-size: 26px;
 	color: grey;
 }
@@ -85,4 +89,31 @@ ul#analysisConfigDropdown {
 .list-group.config-options {
 	overflow-y: scroll;
 	max-height: 197px;
+}
+
+
+
+.navbar {
+	padding: 0;
+} 
+
+.btn.show-packages {
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+    font-size: 1.3em;
+    min-width: 46%;
+}
+
+.btn.show-packages > span{
+    font-weight: 900;
+    width: 85%;
+    font-family: "Font Awesome 5 Free";
+}
+
+.left {
+    padding-right: 2%;
+}
+
+.right {
+    padding-left: 2%;
 }

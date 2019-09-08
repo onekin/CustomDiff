@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,114 +70,12 @@ public class SankeyController {
 	 * model.addAttribute("nodes", nodes); return "index"; }
 	 */
 
-	@ResponseBody
-	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/product/{expandId}")
-	public SankeyResponse expandProduct(@PathVariable(name = "expandId") String expandId,
-			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
-
-		if (expandId.equalsIgnoreCase("ALL-PR")) {
-			return mainService.expandAggregatedPackage(sankeyResponse);
-		} else {
-		
-		}
-
-		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
-
-	}
 	
-	
-	@ResponseBody
-	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/product/{expandId}")
-	public SankeyResponse expandParentFeature(@PathVariable(name = "expandId") String expandId,
-			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
-
-		if (expandId.equalsIgnoreCase("ALL-F")) {
-			return mainService.expandAggregatedParentFeature(sankeyResponse);
-		} else {
-		
-		}
-
-		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
-
-	}
 	
 	
 
-	@ResponseBody
-	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, path = "/nodes/{expandId}")
-	public SankeyResponse expandNode(@PathVariable(name = "expandId") String expandId,
-			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
 
-		sankeyResponse.getNodes().removeIf(x -> x.getId().equals(expandId));
-		sankeyResponse.removeLinksById(expandId);
-		// TODO implementar segun tipo de artefacto ???
-
-		String packageId = expandId.split("-")[1];
-		if (packageId.contains("'")) {
-			if (featureIds.size() <= 0) {
-				mainService.expandLeftPackage(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(),
-						packageId.substring(0, packageId.length() - 1));
-			} else {
-				mainService.expandLeftPackageFiltered(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(),
-						packageId.substring(0, packageId.length() - 1), featureIds);
-			}
-		} else {
-			if (featureIds.size() <= 0) {
-
-				mainService.expandRightPackage(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(), packageId);
-			} else {
-				mainService.expandRightPackageFiltered(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes(),
-						packageId, featureIds);
-
-			}
-
-		}
-
-		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
-
-	}
-
-	@ResponseBody
-	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, path = "/collapse/{collapseId}")
-	public SankeyResponse collapseNodes(@PathVariable(name = "collapseId") String collapseId,
-			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
-
-		List<SankeyNode> nodesToRemove = sankeyResponse.getNodes().stream()
-				.filter(x -> x.getParentId() != null && x.getParentId().equals(collapseId))
-				.collect(Collectors.toList());
-		sankeyResponse.getNodes().removeAll(nodesToRemove);
-		sankeyResponse.removeLinksByParentId(nodesToRemove);
-
-		// TODO implementar segun tipo de artefacto
-		String packageId = collapseId.split("-")[1];
-
-		if (packageId.contains("'")) {
-			if (featureIds.size() <= 0) {
-
-				mainService.collapseLeftFilesIntoPackage(sankeyResponse.getNodes(), sankeyResponse.getSankeyItems(),
-						packageId.substring(0, packageId.length() - 1));
-			} else {
-				mainService.collapseLeftFilesIntoPackageFiltered(sankeyResponse.getNodes(),
-						sankeyResponse.getSankeyItems(), packageId.substring(0, packageId.length() - 1), featureIds);
-			}
-		} else {
-			if (featureIds.size() <= 0) {
-
-				mainService.collapseRightFilesIntoPackage(sankeyResponse.getNodes(), sankeyResponse.getSankeyItems(),
-						packageId);
-			} else {
-				mainService.collapseRightFilesIntoPackageFiltered(sankeyResponse.getNodes(),
-						sankeyResponse.getSankeyItems(), packageId, featureIds);
-			}
-
-		}
-
-		return new SankeyResponse(sankeyResponse.getSankeyItems(), sankeyResponse.getNodes());
-	}
+	
 
 	@ResponseBody
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
@@ -217,7 +114,7 @@ public class SankeyController {
 						churnCoreAssetsAndFeaturesByProduct.getChurn(), SankeyLinkType.ASSETPRODUCT);
 				sankeyData.add(sankeyLink);
 				node = new SankeyNode(ASSET_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdcoreasset() + "'",
-						churnCoreAssetsAndFeaturesByProduct.getCa_path(), false, true, SankeyNodeType.ASSET);
+						churnCoreAssetsAndFeaturesByProduct.getCa_path(), false, true, SankeyNodeType.LEFTASSET);
 				node.setParentId(PACKAGE_PREFIX + churnCoreAssetsAndFeaturesByProduct.getPackageId() + "'");
 				nodes.add(new SankeyNode(PRODUCT_PREFIX + churnCoreAssetsAndFeaturesByProduct.getIdproductrelease(),
 						churnCoreAssetsAndFeaturesByProduct.getPr_name(), false, false, SankeyNodeType.PRODUCT));
@@ -244,7 +141,7 @@ public class SankeyController {
 				sankeyData.add(sankeyLink);
 
 				nodes.add(new SankeyNode(PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
-						churnAssetsProducts.getPackageName(), true, false, SankeyNodeType.PACKAGE));
+						churnAssetsProducts.getPackageName(), true, false, SankeyNodeType.LEFTPACKAGE));
 				nodes.add(new SankeyNode(PRODUCT_PREFIX + churnAssetsProducts.getIdProductRelease(),
 						churnAssetsProducts.getPrName(), false, false, SankeyNodeType.PRODUCT));
 
@@ -289,7 +186,7 @@ public class SankeyController {
 						SankeyLinkType.FEATUREASSET);
 				sankeyData.add(sankeyLink);
 				node = new SankeyNode(ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(),
-						churnFeaturesAssets.getCapath(), false, true, SankeyNodeType.ASSET);
+						churnFeaturesAssets.getCapath(), false, true, SankeyNodeType.RIGHTASSET);
 				node.setParentId(PACKAGE_PREFIX + churnFeaturesAssets.getPackageId());
 				allRightPackages.add(node.getParentId());
 				nodes.add(node);
@@ -312,7 +209,7 @@ public class SankeyController {
 						SankeyLinkType.FEATUREPACKAGE);
 				sankeyData.add(sankeyLink);
 				nodes.add(new SankeyNode(PACKAGE_PREFIX + churnFeaturesPackages.getIdpackage(),
-						churnFeaturesPackages.getPackage_name(), true, false, SankeyNodeType.PACKAGE));
+						churnFeaturesPackages.getPackage_name(), true, false, SankeyNodeType.RIGHTPACKAGE));
 
 			}
 		}

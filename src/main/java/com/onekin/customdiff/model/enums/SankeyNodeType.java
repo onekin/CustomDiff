@@ -2,9 +2,12 @@ package com.onekin.customdiff.model.enums;
 
 public enum SankeyNodeType {
 
-	PACKAGE,
+	LEFTPACKAGE,
+	RIGHTPACKAGE,
+	PARENTFEATURE,
 	FEATURE, 
-	ASSET, 
+	LEFTASSET,
+	RIGHTASSET,
 	PRODUCT
 
 }

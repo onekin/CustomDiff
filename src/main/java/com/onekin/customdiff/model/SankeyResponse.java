@@ -20,11 +20,11 @@ public class SankeyResponse {
 		this.nodes = nodes;
 	}
 
-	public List<SankeyLink> getSankeyItems() {
+	public List<SankeyLink> getSankeyLinks() {
 		return sankeyLinks;
 	}
 
-	public void setSankeyItems(List<SankeyLink> sankeyLinks) {
+	public void setSankeyLinks(List<SankeyLink> sankeyLinks) {
 		this.sankeyLinks = sankeyLinks;
 	}
 
@@ -44,6 +44,12 @@ public class SankeyResponse {
 	public void removeLinksById(String expandId) {
 		this.sankeyLinks.removeIf(x -> x.getFrom().equals(expandId) | x.getTo().equals(expandId));
 		
+	}
+
+	public void deleteNodesAndLinksById(String parentFeatureId) {
+		this.sankeyLinks.removeIf(x -> x.getFrom().equals(parentFeatureId) | x.getTo().equals(parentFeatureId));
+		this.nodes.removeIf(x -> x.getId().equals(parentFeatureId));
+
 	}
 
 }

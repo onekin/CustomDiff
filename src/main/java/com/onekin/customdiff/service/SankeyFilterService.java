@@ -45,13 +45,13 @@ public class SankeyFilterService {
 	}
 
 	public List<ChurnFeaturesAndPackagesGrouped> getFeaturesAndPackagesChurnInFeaturesAndInPackages(List<String> featureIds, Set<String> rightPackages) {
-		List<Integer> rightPackageIds = Formatting.cleanListOfIds(rightPackages);
+		Set<Integer> rightPackageIds = Formatting.cleanListOfIds(rightPackages);
 		return featuresAndPackagesRepo.findByIdfeatureInAndIdpackageIn(featureIds,rightPackageIds);
 	}
 	
 	
 	public List<ChurnFeaturesPackageAssets> getFeaturesAndAssetsChurnInFeaturesAndInAssets(List<String> featureIds, Set<String> rightAssets) {
-		List<Integer> rightAssetsIds = Formatting.cleanListOfIds(rightAssets);
+		Set<Integer> rightAssetsIds = Formatting.cleanListOfIds(rightAssets);
 		return featuresAndAssetsRepo.findByFeatureIdInAndIdcoreassetIn(featureIds,rightAssetsIds);
 	}
 	
@@ -60,7 +60,7 @@ public class SankeyFilterService {
 	
 	public List<ChurnPackageAndProduct> getPackagesAndProductsChurnInFeaturesAndInPackages(List<String> featureIds,
 			Set<String> leftPackages) {
-		List<Integer> leftPackageIds = Formatting.cleanListOfIds(leftPackages);
+		Set<Integer> leftPackageIds = Formatting.cleanListOfIds(leftPackages);
 		return assetsAndProductRepo.findByIdFeatureInAndPackageIdIn(featureIds,leftPackageIds);
 
 	}
@@ -68,20 +68,20 @@ public class SankeyFilterService {
 	
 	public List<ChurnCoreAssetsAndFeaturesByProduct> getAssetsAndProductsChurnInFeaturesAndInPackages(List<String> featureIds,
 			Set<String> leftAssets) {
-		List<Integer> leftAssetsIds = Formatting.cleanListOfIds(leftAssets);
+		Set<Integer> leftAssetsIds = Formatting.cleanListOfIds(leftAssets);
 		return assetsAndProductRepo.findByFeatureIdInAndIdcoreassetIn(featureIds,leftAssetsIds);
 
 	}
 
 	public List<ChurnPackageAndProduct> getPackagesAndProductsChurnInFeaturesAndNotInExistingPackages(
 			List<String> featureIds, Set<String> leftPackages) {
-		List<Integer> leftPackageIds = Formatting.cleanListOfIds(leftPackages);
+		Set<Integer> leftPackageIds = Formatting.cleanListOfIds(leftPackages);
 		return assetsAndProductRepo.findByIdFeatureInAndPackageIdNotIn(featureIds,leftPackageIds);
 	}
 
 	public List<ChurnFeaturesAndPackagesGrouped> getFeaturesAndPackagesChurnInFeaturesAndNotInPackages(
 			List<String> featureIds, Set<String> allRightPackages) {
-		List<Integer> rightPackageIds = Formatting.cleanListOfIds(allRightPackages);
+		Set<Integer> rightPackageIds = Formatting.cleanListOfIds(allRightPackages);
 		return featuresAndPackagesRepo.findByIdfeatureInAndNotIdpackageIn(featureIds,rightPackageIds);
 	}
 	

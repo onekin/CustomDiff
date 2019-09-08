@@ -2,6 +2,7 @@ package com.onekin.customdiff.repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -22,7 +23,7 @@ public interface ChurnFeaturesPackageAssetsRepository extends CrudRepository<Chu
 	Iterable<ChurnPackageAndProduct> findByFeatureIdIn(Collection<String> featureIds);
 
 	List<ChurnFeaturesPackageAssets> findByFeatureIdInAndIdcoreassetIn(List<String> featureIds,
-			List<Integer> rightAssetsIds);
+			Set<Integer> rightAssetsIds);
 
 	@Query(value = "SELECT new ChurnFeaturesPackageAssets(c.id, c.featureId, c.featurename, c.idcoreasset, "
 			+ "c.caname, c.capath, c.packageId, SUM(c.churn)) FROM ChurnFeaturesPackageAssets c where c.packageId=:idPackage AND c.featureId in (:featureIds) GROUP BY c.featureId ,c.idcoreasset")

@@ -1,24 +1,26 @@
 	var expandAndCollapse = function(){
-			$(".fa-expand-arrows-alt").click(function(event){
+			$(".fa-plus-square").click(function(event){
 				var selectedFeatures = getSelectedFeatures();
 				var urlString;
 				if($(this).attr("data-type").toUpperCase()=="PRODUCT"){
 				    urlString = "/expand/product/"+$(this).attr("data-id")+"?features="+selectedFeatures;
-				}else if($(this).attr("data-type").toUpperCase()=="PRODUCT"){
-					//CAMBIAR POR PARENT FEATURE
+				}else if($(this).attr("data-type").toUpperCase()=="PARENTFEATURE"){
+					// CAMBIAR POR PARENT FEATURE
 				    urlString = "/expand/parent-feature/"+$(this).attr("data-id")+"?features="+selectedFeatures;
-				}else{
-					urlString = "/nodes/"+$(this).attr("data-id")+"?features="+selectedFeatures
+				}else if($(this).attr("data-type").toUpperCase()=="LEFTPACKAGE"){
+					urlString = "/expand/left-package/"+$(this).attr("data-id")+"?features="+selectedFeatures
+				}else if($(this).attr("data-type").toUpperCase()=="LEFASSET"){
+					urlString = "/expand/left-asset/"+$(this).attr("data-id")+"?features="+selectedFeatures
 				}
 		       	$.ajax({
 		       		type: 'POST',
 			       	url : urlString,
-		    		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
+		    		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
 		    		dataType: "json",
 		    		contentType:"application/json",
 			       	accept: "application/json",
 		     		success: function(data) {
-		       			linksData = data.sankeyItems;
+		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
 			       			 plotOptions: {
@@ -29,7 +31,7 @@
 			       				}
 			       			 },
 		       		        series: {
-			       		            data: data.sankeyItems,
+			       		            data: data.sankeyLinks,
 			       		            nodes: data.nodes,
 			       		         	
 		       		        }
@@ -47,12 +49,12 @@
 		       	$.ajax({
 		       		type: 'POST',
 		       		url : "/collapse/"+$(this).attr("data-id")+"?features="+selectedFeatures,
-		       		data : JSON.stringify({"sankeyItems" : linksData, "nodes" : nodes}),
+		       		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
 		       		dataType: "json",
 		       		contentType:"application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
-		       			linksData = data.sankeyItems;
+		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
 		       			 plotOptions: {
@@ -63,7 +65,7 @@
 		       					   }
 		       				 },
 		       		        series: {
-		       		            data: data.sankeyItems,
+		       		            data: data.sankeyLinks,
 		       		            nodes: data.nodes,
 		       		         	
 		       		        }
@@ -119,7 +121,7 @@
 			       		contentType: "application/json",
 			       		accept: "application/json",
 			       		success: function(data) {
-			       			linksData = data.sankeyItems;
+			       			linksData = data.sankeyLinks;
 			       			nodes = data.nodes;
 			       			sankeyChart.update({
 			       			 plotOptions: {
@@ -130,7 +132,7 @@
 			       					   }
 			       				 },
 			       		        series: {
-			       		            data: data.sankeyItems,
+			       		            data: data.sankeyLinks,
 			       		            nodes: data.nodes,
 			       		         	
 			       		        }
@@ -152,7 +154,7 @@
 			       		url : "/clear-feature-filters",
 			       		accept: "application/json",
 			       		success: function(data) {
-			       			linksData = data.sankeyItems;
+			       			linksData = data.sankeyLinks;
 			       			nodes = data.nodes;
 			       			sankeyChart.update({
 			       			 plotOptions: {
@@ -163,7 +165,7 @@
 			       					   }
 			       				 },
 			       		        series: {
-			       		            data: data.sankeyItems,
+			       		            data: data.sankeyLinks,
 			       		            nodes: data.nodes,
 			       		         	
 			       		        }
@@ -236,3 +238,158 @@
 				expandAndCollapse();
 				
 			}
+			
+			
+			
+			function showLeftPackages(button){
+				$.ajax({
+		       		type: 'POST',
+		       		url : "/left-packages/show",
+		       		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType: "application/json",
+		       		accept: "application/json",
+		       		success: function(data) {
+		       			var item = button.getElementsByTagName("i")[0]
+		       			item.classList.remove("fa-chevron-circle-left");
+		       			item.classList.add("fa-chevron-circle-right");
+		       			item.setAttribute("title", "Collapse left packages/assets");
+		       			button.setAttribute("onclick", "collapseLeftPackages(this)");
+		       			button.getElementsByTagName("span")[0].innerText  = "Collapse Left Packages";
+		       			linksData = data.sankeyLinks;
+		       			nodes = data.nodes;
+		       			sankeyChart.update({
+		       			 plotOptions: {
+		     				series:{
+		     					animation:{
+		       		        		duration: 2000
+		       		        			  }
+		       					   }
+		       				 },
+		       		        series: {
+		       		            data: data.sankeyLinks,
+		       		            nodes: data.nodes,
+		       		         	
+		       		        }
+	       				});
+		       			expandAndCollapse();
+		            }
+		       		
+	       		});  
+			}
+			
+			
+			function collapseLeftPackages(button){
+				$.ajax({
+		       		type: 'POST',
+		       		url : "/left-packages/collapse",
+		       		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType: "application/json",
+		       		accept: "application/json",
+		       		success: function(data) {
+		       			var item = button.getElementsByTagName("i")[0];
+		       			item.classList.remove("fa-chevron-circle-right");
+		       			item.classList.add("fa-chevron-circle-left");
+		       			item.setAttribute("title", "Show left packages");
+		       			button.setAttribute("onclick", "showLeftPackages(this)");
+		       			button.getElementsByTagName("span")[0].innerText  = "Show Left Packages";
+		       			linksData = data.sankeyLinks;
+		       			nodes = data.nodes;
+		       			sankeyChart.update({
+		       			 plotOptions: {
+		     				series:{
+		     					animation:{
+		       		        		duration: 2000
+		       		        			  }
+		       					   }
+		       				 },
+		       		        series: {
+		       		            data: data.sankeyLinks,
+		       		            nodes: data.nodes,
+		       		         	
+		       		        }
+	       				});
+		       			expandAndCollapse();
+		            }
+		       		
+	       		});  			
+				
+			}
+			
+			function showRightPackages(button){
+				$.ajax({
+		       		type: 'POST',
+		       		url : "/right-packages/show",
+		       		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType: "application/json",
+		       		accept: "application/json",
+		       		success: function(data) {
+		       			var item = button.getElementsByTagName("i")[0];
+		       			item.classList.remove("fa-chevron-circle-right");
+		       			item.classList.add("fa-chevron-circle-left");
+		       			item.setAttribute("title", "Collapse left packages/assets");
+		       			button.setAttribute("onclick", "collapseRightPackages(this)");
+		       			button.getElementsByTagName("span")[0].innerText  = "Collapse Right Packages";
+		       			linksData = data.sankeyLinks;
+		       			nodes = data.nodes;
+		       			sankeyChart.update({
+		       			 plotOptions: {
+		     				series:{
+		     					animation:{
+		       		        		duration: 2000
+		       		        			  }
+		       					   }
+		       				 },
+		       		        series: {
+		       		            data: data.sankeyLinks,
+		       		            nodes: data.nodes,
+		       		         	
+		       		        }
+	       				});
+		       			expandAndCollapse();
+		            }
+		       		
+	       		});  			
+			}
+			
+			
+			
+			function collapseRightPackages(button){
+				$.ajax({
+		       		type: 'POST',
+		       		url : "/right-packages/collapse",
+		       		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
+		       		dataType: "json",
+		       		contentType: "application/json",
+		       		accept: "application/json",
+		       		success: function(data) {
+		       			var item = button.getElementsByTagName("i")[0]
+		       			item.classList.remove("fa-chevron-circle-left");
+		       			item.classList.add("fa-chevron-circle-right");
+		       			item.setAttribute("title", "Collapse left packages/assets");
+		       			button.setAttribute("onclick", "showRightPackages(this)");
+		       			button.getElementsByTagName("span")[0].innerText  = "Show Left Packages";
+		       			linksData = data.sankeyLinks;
+		       			nodes = data.nodes;
+		       			sankeyChart.update({
+		       			 plotOptions: {
+		     				series:{
+		     					animation:{
+		       		        		duration: 2000
+		       		        			  }
+		       					   }
+		       				 },
+		       		        series: {
+		       		            data: data.sankeyLinks,
+		       		            nodes: data.nodes,
+		       		         	
+		       		        }
+	       				});
+		       			expandAndCollapse();
+		            }
+		       		
+	       		});  			
+			}
+			
