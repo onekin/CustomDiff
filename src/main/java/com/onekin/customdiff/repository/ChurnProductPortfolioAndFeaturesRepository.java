@@ -1,6 +1,7 @@
 package com.onekin.customdiff.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -13,7 +14,7 @@ import com.onekin.customdiff.model.ChurnProductPortfolioAndFeatures;
 public interface ChurnProductPortfolioAndFeaturesRepository
 		extends CrudRepository<ChurnProductPortfolioAndFeatures, Long> {
 
-	Iterable<ChurnProductPortfolioAndFeatures> findByIdFeatureIn(List<String> featureIds);
+	Iterable<ChurnProductPortfolioAndFeatures> findByIdFeatureIn(Set<String> featureIds);
 
 	@Query("Select SUM(c.churn) from ChurnProductPortfolioAndFeatures c where c.idFeature!='No Feature'")
 	Integer getAgregatedChurn();

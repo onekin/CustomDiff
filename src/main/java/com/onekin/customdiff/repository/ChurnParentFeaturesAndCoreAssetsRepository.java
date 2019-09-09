@@ -27,4 +27,5 @@ public interface ChurnParentFeaturesAndCoreAssetsRepository
 	List<ChurnParentFeaturesAndCoreAssets> findByParentFeatureIdCoreAssetIdInAndGroupByFeatures(
 			@Param("assetIds")Set<Integer> assetIds, @Param("parentFeatureId") int parentFeatureId);
 
+
 }

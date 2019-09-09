@@ -15,7 +15,8 @@ public class ChurnFeaturesAndPackagesGrouped {
 		String featurename;
 		String  package_name;
 		int idpackage;	
-
+		int parentFeatureId;
+		
 		long  churn;
 
 		
@@ -99,6 +100,20 @@ public class ChurnFeaturesAndPackagesGrouped {
 
 		public void setChurn(long churn) {
 			this.churn = churn;
+		}
+
+
+
+
+		public String getParentFeatureId() {
+			return getParentFeatureId();
+		}
+
+
+
+
+		public void setParentFeatureId(int parentFeatureId) {
+			this.parentFeatureId = parentFeatureId;
 		}
 		
 

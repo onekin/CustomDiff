@@ -12,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.onekin.customdiff.model.ChurnFeaturesPackageAssets;
 import com.onekin.customdiff.model.ChurnPackageAndProduct;
-import com.onekin.customdiff.model.ChurnParentFeaturesAndCoreAssets;
 
 @Transactional
 public interface ChurnFeaturesPackageAssetsRepository extends CrudRepository<ChurnFeaturesPackageAssets, Long> {
@@ -23,7 +22,7 @@ public interface ChurnFeaturesPackageAssetsRepository extends CrudRepository<Chu
 
 	Iterable<ChurnPackageAndProduct> findByFeatureIdIn(Collection<String> featureIds);
 
-	List<ChurnFeaturesPackageAssets> findByFeatureIdInAndIdcoreassetIn(List<String> featureIds,
+	List<ChurnFeaturesPackageAssets> findByFeatureIdInAndIdcoreassetIn(Set<String> featureIds,
 			Set<Integer> rightAssetsIds);
 
 	@Query(value = "SELECT new ChurnFeaturesPackageAssets(c.id, c.featureId, c.featurename, c.idcoreasset, "

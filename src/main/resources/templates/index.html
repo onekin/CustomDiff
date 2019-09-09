@@ -9,6 +9,8 @@
 <script src="/js/highcharts.js"></script>
 <script src="/js/sankey.js"></script>
 <script src="/js/exporting.js"></script>
+<script src="/js/jspdf.js"></script>
+<script src="/js/analysis-report.js"></script>
 
 <link rel="stylesheet"
 	href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
@@ -20,13 +22,13 @@
 <link rel="stylesheet" type="text/css" href="/css/main.css"></link>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Highcharts Example</title>
+<title>Welcome to CustomDiff</title>
 
 <style type="text/css">
 #container {
-	width: 90vw;
+	width: 98vw;
 	margin-left: 2em;
-	height: 80vh;
+	height: 84vh;
 }
 
 #csv {
@@ -48,14 +50,20 @@
 						</a>
 						<ul class="dropdown-menu" id="analysisConfigDropdown">
 							<li class="feature-config"><a href="#"
-								onclick='openSaveModal()'>Save Configuration<i
+								onclick='openSaveModal()'>Save New Configuration<i
 									class="far fa-save"></i>
 							</a></li>
 							<li class="feature-config"><a href="#"
 								onclick="openConfigOpenModal()">Open Configuration<i
 									class="far fa-folder-open"></i>
 							</a></li>
-
+							<li role="separator" class="divider"></li>
+							<li class="feature-config">Open recent configuration</li>
+							<li class="feature-config"><a href="#">Config 1 </a></li>
+							<li class="feature-config"><a href="#">Config 2 </a></li>
+							<li class="feature-config"><a href="#">Config 3 </a></li>
+							<li class="feature-config"><a href="#">Config 4 </a></li>
+							<li class="feature-config"><a href="#">Config 5 </a></li>
 						</ul>
 
 
@@ -70,49 +78,327 @@
 			<!-- /.container-fluid -->
 		</nav>
 	</header>
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-1"></div>
-			<div class="col-4">
-				<button class="btn show-packages btn-outline-dark"
-					onclick="showLeftPackages(this)">
-					<i class="fas fa-chevron-circle-left left"
-						title="Show Assets-Products effort"></i><span>Show
-						Left Packages</span>
-				</button>
-			</div>
-			<div class="col-3"></div>
-			<div class="col-4">
-				<button class="btn show-packages btn-outline-dark"
-					onclick="showRightPackages(this)">
-					<span>Show Right Packages</span><i
-						class="fas fa-chevron-circle-right right"
-						title="Show Feature-Assets effort"></i>
-				</button>
-			</div>
 
+	<div class="container-fluid filter-active" id="filter-prod-fea">
+		<div class="row">
+			<div class="col-3">
+				<div class="btn-group">
+					<button class="btn show-packages" onclick="showLeftPackages(this)">
+						<i class="fas fa-chevron-circle-left left"
+							title="Show Assets-Products effort"></i>
+					</button>
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Products <span class="caret"></span>
+					</a>
+
+					<ul class="dropdown-menu" id="productDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="productInput" class="searchInput"
+							onkeyup="filterFunction('productInput','productDropdown')"></li>
+						<li th:each="product : ${products}" href="#"
+							class="feature-config"><input type="checkbox"
+							class="product-checkbox"
+							th:data-id="${'pr-'+product.idproductrelease}" /><label
+							th:text="${product.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedProducts()">Apply</button></li>
+					</ul>
+
+				</div>
+			</div>
+			<div class="col-6"></div>
+			<div class="col-3 ">
+				<div class="btn-group float-right" style="padding-right: 5%">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Features <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="featureDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="featureInput" class="searchInput"
+							onkeyup="filterFunction('featureInput','featureDropdown')"></li>
+						<li th:each="feature : ${features}" href="#"
+							class="feature-config"><input class="feature-checkbox"
+							type="checkbox" th:data-id="${feature}" /><label
+							th:text="${feature}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedFeatures()">Apply</button>
+							<button type="button" class="btn btn-primary float-right"
+								onClick="clearFeatureFilters()">Clear</button></li>
+					</ul>
+					<button class="btn show-packages" onclick="showRightPackages(this)">
+						<i class="fas fa-chevron-circle-right right"
+							title="Show Feature-Assets effort"></i>
+					</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid d-none" id="filter-prod-fea-pack">
+		<div class="row">
+			<div class="col-3">
+				<div class="btn-group">
+					<button class="btn show-packages" onclick="showLeftPackages(this)">
+						<i class="fas fa-chevron-circle-left left"
+							title="Show Assets-Products effort"></i>
+					</button>
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Products <span class="caret"></span>
+					</a>
+
+					<ul class="dropdown-menu" id="productDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="productInput" class="searchInput"
+							onkeyup="filterFunction('productInput','productDropdown')"></li>
+						<li th:each="product : ${products}" href="#"
+							class="feature-config"><input type="checkbox"
+							class="product-checkbox"
+							th:data-id="${'pr-'+product.idproductrelease}" /><label
+							th:text="${product.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedProducts()">Apply</button></li>
+					</ul>
+
+				</div>
+			</div>
+			<div class="col-6 text-center">
+				<div class="btn-group">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Features <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="featureDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="featureInput" class="searchInput"
+							onkeyup="filterFunction('featureInput','featureDropdown')"></li>
+						<li th:each="feature : ${features}" href="#"
+							class="feature-config"><input class="feature-checkbox"
+							type="checkbox" th:data-id="${feature}" /><label
+							th:text="${feature}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedFeatures()">Apply</button>
+							<button type="button" class="btn btn-primary float-right"
+								onClick="clearFeatureFilters()">Clear</button></li>
+					</ul>
+
+				</div>
+			</div>
+			<div class="col-3 ">
+				<div class="btn-group float-right" style="padding-right: 5%">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Packages <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="packageDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="packageInput" class="searchInput"
+							onkeyup="filterFunction('packageInput','packageDropdown')"></li>
+
+						<li th:each="componentPackage : ${componentPackages}" href="#"
+							class="componentPackage-config"><input
+							class="package-checkbox" type="checkbox"
+							th:data-id="${'pck-'+componentPackage.idpackage}" /><label
+							th:text="${componentPackage.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedPackages()">Apply</button></li>
+
+					</ul>
+					<button class="btn show-packages"
+						onclick="collapseRightPackages(this)">
+						<i class="fas fa-chevron-circle-left right"
+							title="Show Feature-Assets effort"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="container-fluid d-none" id="filter-pack-prod-fea">
+		<div class="row">
+			<div class="col-3 ">
+				<div class="btn-group " style="padding-right: 5%">
+					<button class="btn show-packages"
+						onclick="collapseLeftPackages(this)">
+						<i class="fas fa-chevron-circle-right left"
+							title="Show Assets-Products effort"></i>
+					</button>
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Packages <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="packageDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="packageInput" class="searchInput"
+							onkeyup="filterFunction('packageInput','packageDropdown')"></li>
+
+						<li th:each="componentPackage : ${componentPackages}" href="#"
+							class="componentPackage-config"><input
+							class="package-checkbox" type="checkbox"
+							th:data-id="${'pck-'+componentPackage.idpackage}" /><label
+							th:text="${componentPackage.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedPackages()">Apply</button></li>
+
+					</ul>
+				</div>
+			</div>
+			<div class="col-6 text-center">
+				<div class="btn-group">
+
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Products <span class="caret"></span>
+					</a>
+
+					<ul class="dropdown-menu" id="productDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="productInput" class="searchInput"
+							onkeyup="filterFunction('productInput','productDropdown')"></li>
+						<li th:each="product : ${products}" href="#"
+							class="feature-config"><input type="checkbox"
+							class="product-checkbox"
+							th:data-id="${'pr-'+product.idproductrelease}" /><label
+							th:text="${product.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedProducts()">Apply</button></li>
+					</ul>
+
+				</div>
+			</div>
+			<div class="col-3">
+				<div class="btn-group float-right" style="padding-right: 5%">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Features <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="featureDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="featureInput" class="searchInput"
+							onkeyup="filterFunction('featureInput','featureDropdown')"></li>
+						<li th:each="feature : ${features}" href="#"
+							class="feature-config"><input class="feature-checkbox"
+							type="checkbox" th:data-id="${feature}" /><label
+							th:text="${feature}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedFeatures()">Apply</button>
+							<button type="button" class="btn btn-primary float-right"
+								onClick="clearFeatureFilters()">Clear</button></li>
+					</ul>
+					<button class="btn show-packages" onclick="showRightPackages(this)">
+						<i class="fas fa-chevron-circle-right right"
+							title="Show Feature-Assets effort"></i>
+					</button>
+				</div>
+			</div>
 
 		</div>
 	</div>
-	<div class="btn-group">
-		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-			Features <span class="caret"></span>
-		</a>
-		<ul class="dropdown-menu" id="featureDropdown">
-			<li><i class="fas fa-search"></i> <input type="text"
-				placeholder="Search.." id="featureInput" class="searchInput"
-				onkeyup="filterFunction('featureInput','featureDropdown')"></li>
-			<li th:each="feature : ${features}" href="#" class="feature-config"><input
-				class="feature-checkbox" type="checkbox" th:data-id="${feature}" /><label
-				th:text="${feature}"></label></li>
-			<li><button type="button" class="btn btn-primary float-right"
-					onClick="filterSelectedFeatures()">Apply</button>
-				<button type="button" class="btn btn-primary float-right"
-					onClick="clearFeatureFilters()">Clear</button></li>
-		</ul>
 
 
+
+
+	<div class="container-fluid d-none" id="filter-pack-prod-fea-pack">
+		<div class="row">
+			<div class="col-3 ">
+				<div class="btn-group " style="padding-right: 5%">
+					<button class="btn show-packages"
+						onclick="collapseLeftPackages(this)">
+						<i class="fas fa-chevron-circle-right left"
+							title="Show Assets-Products effort"></i>
+					</button>
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Packages <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="packageDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="packageInput" class="searchInput"
+							onkeyup="filterFunction('packageInput','packageDropdown')"></li>
+
+						<li th:each="componentPackage : ${componentPackages}" href="#"
+							class="componentPackage-config"><input
+							class="package-checkbox" type="checkbox"
+							th:data-id="${'pck-'+componentPackage.idpackage}" /><label
+							th:text="${componentPackage.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedPackages()">Apply</button></li>
+
+					</ul>
+				</div>
+			</div>
+			<div class="col-3 text-center">
+				<div class="btn-group" style="padding-right: 24%;">
+
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Products <span class="caret"></span>
+					</a>
+
+					<ul class="dropdown-menu" id="productDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="productInput" class="searchInput"
+							onkeyup="filterFunction('productInput','productDropdown')"></li>
+						<li th:each="product : ${products}" href="#"
+							class="feature-config"><input type="checkbox"
+							class="product-checkbox"
+							th:data-id="${'pr-'+product.idproductrelease}" /><label
+							th:text="${product.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedProducts()">Apply</button></li>
+					</ul>
+
+				</div>
+			</div>
+			<div class="col-3 text-center">
+				<div class="btn-group" style="padding-left: 37%;">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Features <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="featureDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="featureInput" class="searchInput"
+							onkeyup="filterFunction('featureInput','featureDropdown')"></li>
+						<li th:each="feature : ${features}" href="#"
+							class="feature-config"><input class="feature-checkbox"
+							type="checkbox" th:data-id="${feature}" /><label
+							th:text="${feature}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedFeatures()">Apply</button>
+							<button type="button" class="btn btn-primary float-right"
+								onClick="clearFeatureFilters()">Clear</button></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-3 ">
+				<div class="btn-group float-right" style="padding-right: 5%">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						Packages <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" id="packageDropdown">
+						<li><i class="fas fa-search"></i> <input type="text"
+							placeholder="Search.." id="packageInput" class="searchInput"
+							onkeyup="filterFunction('packageInput','packageDropdown')"></li>
+
+						<li th:each="componentPackage : ${componentPackages}" href="#"
+							class="componentPackage-config"><input
+							class="package-checkbox" type="checkbox"
+							th:data-id="${'pck-'+componentPackage.idpackage}" /><label
+							th:text="${componentPackage.name}"></label></li>
+						<li><button type="button" class="btn btn-primary float-right"
+								onClick="filterSelectedPackages()">Apply</button></li>
+
+					</ul>
+					<button class="btn show-packages"
+						onclick="collapseRightPackages(this)">
+						<i class="fas fa-chevron-circle-left right"
+							title="Show Feature-Assets effort"></i>
+					</button>
+				</div>
+			</div>
+
+		</div>
 	</div>
+
+
+
+
+
+
 	<div id="container"></div>
 	<div id="hallmarkModal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
@@ -128,11 +414,11 @@
 					<i class="fas fa-pencil prefix grey-text"></i> <label
 						data-error="wrong" data-success="right" for="form8">Your
 						analysis hallmark</label>
-					<textarea type="text" id="form8" class="md-textarea form-control"
+					<textarea type="text" id="hallmarkText" required class="md-textarea form-control"
 						rows="4"></textarea>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-primary" onclick="saveAnalysisHallMark()">Save changes</button>
 					<button type="button" class="btn btn-secondary"
 						data-dismiss="modal">Close</button>
 				</div>
@@ -233,9 +519,9 @@
 					 events: {
 			                click: function (event) {
 								   		if (event.point.isNode){
-								   			window.open(window.location.href+"node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
+								   			window.open(window.location.origin+"localhost:9090/node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
 								   		}else{
-								   			window.open(window.location.href+"link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to);
+								   			window.open(window.location.origin+"/link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to);
 								   		}
 						   		}
 			            }
@@ -291,7 +577,7 @@
 		            },
 		            report: {
 		                onclick: function () {
-		                    alert("This functionality is not yet supported")
+		                	Reports.saveReport();
 		                },
 		                text: 'Save Report'
 		            }

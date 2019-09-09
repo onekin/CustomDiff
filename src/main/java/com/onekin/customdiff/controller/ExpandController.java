@@ -25,7 +25,7 @@ public class ExpandController {
 			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/product/{expandId}")
 	public SankeyResponse expandProduct(@PathVariable(name = "expandId") String expandId,
 			@RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
-			return expandService.expandAggregatedPackage(sankeyResponse);
+			return expandService.expandAggregatedProduct(sankeyResponse);
 
 	}
 

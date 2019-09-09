@@ -36,14 +36,14 @@ public interface ChurnCoreAssetsAndFeaturesByProductRepository
 	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
 			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE c.packageId = :packageId and c.featureId IN (:featureIds) GROUP BY c.idproductrelease")
 	List<ChurnPackageAndProduct> findByIdPackageAndFeaturesIn(@Param(value = "packageId") Integer packageId,
-			@Param(value = "featureIds") List<String> featureIds);
+			@Param(value = "featureIds") Set<String> featureIds);
 
 	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
 			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE  c.featureId IN (:featureIds) AND c.packageId IN (:packageIds) GROUP BY c.idproductrelease, c.packageId")
-	List<ChurnPackageAndProduct> findByIdFeatureInAndPackageIdIn(@Param(value = "featureIds") List<String> featureIds,
+	List<ChurnPackageAndProduct> findByIdFeatureInAndPackageIdIn(@Param(value = "featureIds") Set<String> featureIds,
 			@Param(value = "packageIds") Set<Integer> leftPackageIds);
 
-	List<ChurnCoreAssetsAndFeaturesByProduct> findByFeatureIdInAndIdcoreassetIn(List<String> featureIds,
+	List<ChurnCoreAssetsAndFeaturesByProduct> findByFeatureIdInAndIdcoreassetIn(Set<String> featureIds,
 			Set<Integer> leftAssetsIds);
 
 	@Query(value = "SELECT new ChurnCoreAssetsAndFeaturesByProduct(c.id, c.idproductrelease, c.featureId, c.idcoreasset, "
@@ -54,7 +54,7 @@ public interface ChurnCoreAssetsAndFeaturesByProductRepository
 	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
 			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE  c.featureId IN (:featureIds) AND c.packageId NOT IN (:packageIds) GROUP BY c.packageId, c.idproductrelease")
 	List<ChurnPackageAndProduct> findByIdFeatureInAndPackageIdNotIn(
-			@Param(value = "featureIds") List<String> featureIds,
+			@Param(value = "featureIds") Set<String> featureIds,
 			@Param(value = "packageIds") Set<Integer> leftPackageIds);
 
 	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "

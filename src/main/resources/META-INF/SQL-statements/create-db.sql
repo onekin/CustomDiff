@@ -369,7 +369,7 @@ CREATE  OR REPLACE VIEW `customs_by_feature_and_coreasset` AS
 
 select UUID() as 'id', c.idcustomization as 'idcustomization', f.idfeature as 'idfeature', ca.idcoreasset as 'idcoreasset', ca.idpackage as 'idpackage', f.idparent as 'idparentfeature', pf.name as 'parentfeaturename',
 ca.name as 'caname', ca.path as 'capath', pr.idproductrelease as 'idproductrelease' , pr.name as 'prname', c.lines_added as 'added',
-c.lines_deleted as 'deleted',
+c.lines_deleted as 'deleted',	
 c.custom_diff as 'custom_diff', c.message_set as 'messages', c.commit_set as 'commits', c.greater_diff as 'maindiff', vp.expression AS 'expression' 
 
 from customization_fact c inner join variation_point vp

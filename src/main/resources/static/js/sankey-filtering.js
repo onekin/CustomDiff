@@ -23,13 +23,6 @@
 		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
-			       			 plotOptions: {
-			     				series:{
-			     					animation:{
-			       		        		duration: 2000
-			       		        	}
-			       				}
-			       			 },
 		       		        series: {
 			       		            data: data.sankeyLinks,
 			       		            nodes: data.nodes,
@@ -46,9 +39,17 @@
 			});   	
 	       	$(".fa-minus-square").click(function(event){
 				var selectedFeatures = getSelectedFeatures();
+				var urlString;
+				if($(this).attr("data-type").toUpperCase()=="LEFTASSET"){
+				    urlString = "/collapse/left-asset/"+$(this).attr("data-id")+"?features="+selectedFeatures;
+				}else if($(this).attr("data-type").toUpperCase()=="FEATURE"){
+				    urlString = "/collapse/feature/"+$(this).attr("data-id")+"?features="+selectedFeatures;
+				}else if($(this).attr("data-type").toUpperCase()=="RIGHTASSET"){
+					urlString = "/collapse/right-asset/"+$(this).attr("data-id")+"?features="+selectedFeatures
+				}
 		       	$.ajax({
 		       		type: 'POST',
-		       		url : "/collapse/"+$(this).attr("data-id")+"?features="+selectedFeatures,
+		       		url : urlString,
 		       		data : JSON.stringify({"sankeyLinks" : linksData, "nodes" : nodes}),
 		       		dataType: "json",
 		       		contentType:"application/json",
@@ -57,13 +58,6 @@
 		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
-		       			 plotOptions: {
-		     				series:{
-		     					animation:{
-		       		        		duration: 2000
-		       		        			  }
-		       					   }
-		       				 },
 		       		        series: {
 		       		            data: data.sankeyLinks,
 		       		            nodes: data.nodes,
@@ -250,12 +244,17 @@
 		       		contentType: "application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
-		       			var item = button.getElementsByTagName("i")[0]
-		       			item.classList.remove("fa-chevron-circle-left");
-		       			item.classList.add("fa-chevron-circle-right");
-		       			item.setAttribute("title", "Collapse left packages/assets");
-		       			button.setAttribute("onclick", "collapseLeftPackages(this)");
-		       			button.getElementsByTagName("span")[0].innerText  = "Collapse Left Packages";
+		       			var activeFilterDiv = document.getElementsByClassName("filter-active")[0];
+		       			activeFilterDiv.classList.add("d-none");
+		       			activeFilterDiv.classList.remove("filter-active");
+		       			var nextFilterDiv;
+		       			if(activeFilterDiv.id=="filter-prod-fea"){
+		       				nextFilterDiv = document.getElementById("filter-pack-prod-fea");
+		       			}else{
+		       				nextFilterDiv = document.getElementById("filter-pack-prod-fea-pack");
+		       			}
+		       			nextFilterDiv.classList.remove("d-none");
+		       			nextFilterDiv.classList.add("filter-active");
 		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
@@ -288,12 +287,17 @@
 		       		contentType: "application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
-		       			var item = button.getElementsByTagName("i")[0];
-		       			item.classList.remove("fa-chevron-circle-right");
-		       			item.classList.add("fa-chevron-circle-left");
-		       			item.setAttribute("title", "Show left packages");
-		       			button.setAttribute("onclick", "showLeftPackages(this)");
-		       			button.getElementsByTagName("span")[0].innerText  = "Show Left Packages";
+		       			var activeFilterDiv = document.getElementsByClassName("filter-active")[0];
+		       			activeFilterDiv.classList.add("d-none");
+		       			activeFilterDiv.classList.remove("filter-active");
+		       			var nextFilterDiv;
+		       			if(activeFilterDiv.id=="filter-pack-prod-fea"){
+		       				nextFilterDiv = document.getElementById("filter-prod-fea");
+		       			}else{
+		       				nextFilterDiv = document.getElementById("filter-prod-fea-pack");
+		       			}
+		       			nextFilterDiv.classList.remove("d-none");
+		       			nextFilterDiv.classList.add("filter-active");
 		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
@@ -326,12 +330,17 @@
 		       		contentType: "application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
-		       			var item = button.getElementsByTagName("i")[0];
-		       			item.classList.remove("fa-chevron-circle-right");
-		       			item.classList.add("fa-chevron-circle-left");
-		       			item.setAttribute("title", "Collapse left packages/assets");
-		       			button.setAttribute("onclick", "collapseRightPackages(this)");
-		       			button.getElementsByTagName("span")[0].innerText  = "Collapse Right Packages";
+		       			var activeFilterDiv = document.getElementsByClassName("filter-active")[0];
+		       			activeFilterDiv.classList.add("d-none");
+		       			activeFilterDiv.classList.remove("filter-active");
+		       			var nextFilterDiv;
+		       			if(activeFilterDiv.id=="filter-prod-fea"){
+		       				nextFilterDiv = document.getElementById("filter-prod-fea-pack");
+		       			}else{
+		       				nextFilterDiv = document.getElementById("filter-pack-prod-fea-pack");
+		       			}
+		       			nextFilterDiv.classList.remove("d-none");
+		       			nextFilterDiv.classList.add("filter-active");
 		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
@@ -365,12 +374,17 @@
 		       		contentType: "application/json",
 		       		accept: "application/json",
 		       		success: function(data) {
-		       			var item = button.getElementsByTagName("i")[0]
-		       			item.classList.remove("fa-chevron-circle-left");
-		       			item.classList.add("fa-chevron-circle-right");
-		       			item.setAttribute("title", "Collapse left packages/assets");
-		       			button.setAttribute("onclick", "showRightPackages(this)");
-		       			button.getElementsByTagName("span")[0].innerText  = "Show Left Packages";
+		       			var activeFilterDiv = document.getElementsByClassName("filter-active")[0];
+		       			activeFilterDiv.classList.add("d-none");
+		       			activeFilterDiv.classList.remove("filter-active");
+		       			var nextFilterDiv;
+		       			if(activeFilterDiv.id=="filter-prod-fea-pack"){
+		       				nextFilterDiv = document.getElementById("filter-prod-fea");
+		       			}else{
+		       				nextFilterDiv = document.getElementById("filter-pack-prod-fea");
+		       			}
+		       			nextFilterDiv.classList.remove("d-none");
+		       			nextFilterDiv.classList.add("filter-active");
 		       			linksData = data.sankeyLinks;
 		       			nodes = data.nodes;
 		       			sankeyChart.update({
@@ -393,3 +407,27 @@
 	       		});  			
 			}
 			
+			
+			function saveAnalysisHallMark(){
+				var hallmarkText = document.getElementById("hallmarkText");
+				if(hallmarkText.value==undefined || hallmarkText.value.trim()==""){
+					alert("You must enter an analysis description");
+					return;
+				}
+				let sankeySVG = sankeyChart.getSVG();
+				let hallmark = {img: sankeySVG, hallmark: hallmarkText.value};
+				let reportHallmarks= window.localStorage.getItem('reportHallmarks');
+				if(reportHallmarks==null||reportHallmarks==undefined){
+					reportHallmarks = [];
+				}else{
+					reportHallmarks = JSON.parse(reportHallmarks);  
+				}
+				
+				reportHallmarks.push(hallmark);
+				hallmarkText.value="";
+            	$("#hallmarkModal").modal("hide");
+				window.localStorage.setItem('reportHallmarks',JSON.stringify(reportHallmarks));
+
+
+				
+			}

@@ -57,6 +57,9 @@ public class SankeyController {
 		mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
 		model.addAttribute("sankeyData", sankeyInitialLinks);
 		model.addAttribute("nodes", nodes);
+		model.addAttribute("products", entityService.getProducts());
+		model.addAttribute("componentPackages", entityService.getPackages());
+
 		return "index";
 	}
 
@@ -70,17 +73,10 @@ public class SankeyController {
 	 * model.addAttribute("nodes", nodes); return "index"; }
 	 */
 
-	
-	
-	
-
-
-	
-
 	@ResponseBody
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, path = "/filter-features")
-	public SankeyResponse filterSankeyByFeatures(@RequestParam(name = "features") List<String> featureIds,
+	public SankeyResponse filterSankeyByFeatures(@RequestParam(name = "features") Set<String> featureIds,
 			HttpSession session, @RequestBody List<SankeyLink> currentSankeyLinks) {
 		List<SankeyLink> sankeyData = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
@@ -160,6 +156,8 @@ public class SankeyController {
 				sankeyData.add(sankeyLink);
 				nodes.add(new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
 						false, SankeyNodeType.FEATURE));
+				nodes.add(new SankeyNode(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+						churnProdFeature.getPr_name(), false, false, SankeyNodeType.PRODUCT));
 			}
 		}
 
