@@ -9,8 +9,8 @@
 				    urlString = "/expand/parent-feature/"+$(this).attr("data-id")+"?features="+selectedFeatures;
 				}else if($(this).attr("data-type").toUpperCase()=="LEFTPACKAGE"){
 					urlString = "/expand/left-package/"+$(this).attr("data-id")+"?features="+selectedFeatures
-				}else if($(this).attr("data-type").toUpperCase()=="LEFASSET"){
-					urlString = "/expand/left-asset/"+$(this).attr("data-id")+"?features="+selectedFeatures
+				}else if($(this).attr("data-type").toUpperCase()=="RIGHTPACKAGE"){
+					urlString = "/expand/right-package/"+$(this).attr("data-id")+"?features="+selectedFeatures
 				}
 		       	$.ajax({
 		       		type: 'POST',

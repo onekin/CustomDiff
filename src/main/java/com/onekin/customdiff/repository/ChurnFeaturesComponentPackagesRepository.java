@@ -41,5 +41,11 @@ public interface ChurnFeaturesComponentPackagesRepository extends CrudRepository
 	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idfeature in (:featureIds) AND c.idpackage not in (:packageIds) GROUP BY c.idfeature, c.idpackage")
 	List<ChurnFeaturesAndPackagesGrouped> findByIdfeatureInAndNotIdpackageIn(@Param("featureIds") List<String> featureIds,
 			@Param("packageIds") Set<Integer> rightPackageIds);
+	
+	
+	@Query(value = "SELECT new ChurnFeaturesAndPackagesGrouped(c.id, c.idfeature, c.featurename, c.package_name, c.idpackage, SUM(c.churn)) FROM ChurnFeaturesComponentPackages c WHERE c.idpackage IN (:packageIds) and c.idparentfeature= :parentFeatureId GROUP BY c.idfeature")
+	List<ChurnFeaturesAndPackagesGrouped> findByParentFeatureAndPackageIdsInAndGroupByFeatures(
+			@Param("packageIds") Set<Integer> packageIds, @Param("parentFeatureId")int parentFeatureId);
+	
 
 }
