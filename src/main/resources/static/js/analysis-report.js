@@ -8,11 +8,21 @@ class Reports {
 	}
 	reportHallmarks = JSON.parse(reportHallmarks);
     let pdf = new jsPDF('p', 'cm', 'a4', true)
-	reportHallmarks.forEach(function(element){
-		pdf.text(20, 20, element.hallmark);
-		pdf.addSvg(element.img, 40, 40, 200, 400);
+    var canvas = document.createElement('canvas');
+  
+	reportHallmarks.forEach(function(element, index){
+		pdf.setFontSize(18);
+		pdf.text(2, 2, (index+1)  + ". Hallmark description:");
+		pdf.setFontSize(12)
+		var splitTitle = pdf.splitTextToSize(element.hallmark, 40);
+		pdf.text(2, 3, splitTitle);
+		canvg(canvas, element.img);
+		var imgData = canvas.toDataURL('image/jpeg');
+		pdf.addImage(imgData, 'JPEG', 0.5, 6, 20, 9);
+		pdf.addPage();
 
 	}) 
+	pdf.deletePage(reportHallmarks.length+1);
 	pdf.save('analysis-report.pdf');
 	window.localStorage.removeItem('reportHallmarks');
 

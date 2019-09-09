@@ -9,8 +9,7 @@
 <script src="/js/highcharts.js"></script>
 <script src="/js/sankey.js"></script>
 <script src="/js/exporting.js"></script>
-<script src="/js/jspdf.js"></script>
-<script src="/js/analysis-report.js"></script>
+
 
 <link rel="stylesheet"
 	href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
@@ -414,11 +413,12 @@
 					<i class="fas fa-pencil prefix grey-text"></i> <label
 						data-error="wrong" data-success="right" for="form8">Your
 						analysis hallmark</label>
-					<textarea type="text" id="hallmarkText" required class="md-textarea form-control"
-						rows="4"></textarea>
+					<textarea type="text" id="hallmarkText" required
+						class="md-textarea form-control" rows="4"></textarea>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" onclick="saveAnalysisHallMark()">Save changes</button>
+					<button type="button" class="btn btn-primary"
+						onclick="saveAnalysisHallMark()">Save changes</button>
 					<button type="button" class="btn btn-secondary"
 						data-dismiss="modal">Close</button>
 				</div>
@@ -606,7 +606,27 @@
 	          	$("#openConfigModal").modal("show");
 		      }
 	</script>
+	<script src="/js/jspdf.js"></script>
 
+	<script src="/js/libs/rgbcolor.js"></script>
+	<script src="/js/libs/StackBlur.js"></script>
+
+	<script src="/js/canvg.js"></script>
+	<script src="/js/canvas.js"></script>
+	<script src="/js/libs/addimage.js"></script>
+	<script src="/js/png_support.js"></script>
+	<script src="/js/libs/png.js"></script>
+	<script src="/js/libs/zlib.js"></script>
+
+	<script src="/js/libs/FileSaver.js"></script>
+
+	<script src="/js/svg.js"></script>
+
+
+
+	<script src="/js/libs/split_text_to_size.js"></script>
+
+	<script src="/js/analysis-report.js"></script>
 	<script src="/js/sankey-filtering.js"></script>
 </body>
 </html>
