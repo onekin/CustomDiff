@@ -59,13 +59,14 @@ public class ExpandService {
 	private ChurnParentFeaturesAndCoreAssetsRepository parentFeaturesAndCoreAssetsRepo;
 
 	public void expandLeftPackage(List<SankeyLink> sankeyLinks, Set<SankeyNode> nodes, String idPackage) {
-		Iterator<ChurnCoreAssetsAndFeaturesByProduct> it = assetsAndProductRepo
-				.findByPackageIdGroupByAssetId(Integer.parseInt(idPackage)).iterator();
+
 		SankeyLink sankeyLink;
 
 		ChurnCoreAssetsAndFeaturesByProduct assetsAndFeatureChurn;
 		SankeyNode node;
 		if (nodes.stream().anyMatch(x -> x.getId().equals(ALL_PRODUCTS))) {
+			Iterator<ChurnCoreAssetsAndFeaturesByProduct> it = assetsAndProductRepo
+					.findByPackageIdGroupByAssetIdAllProducts(Integer.parseInt(idPackage)).iterator();
 			while (it.hasNext()) {
 				assetsAndFeatureChurn = it.next();
 				sankeyLink = new SankeyLink(PrefixConstants.ASSET_PREFIX + assetsAndFeatureChurn.getIdcoreasset() + "'",
@@ -77,6 +78,8 @@ public class ExpandService {
 				nodes.add(node);
 			}
 		} else {
+			Iterator<ChurnCoreAssetsAndFeaturesByProduct> it = assetsAndProductRepo
+					.findByPackageIdGroupByAssetId(Integer.parseInt(idPackage)).iterator();
 			while (it.hasNext()) {
 				assetsAndFeatureChurn = it.next();
 				sankeyLink = new SankeyLink(PrefixConstants.ASSET_PREFIX + assetsAndFeatureChurn.getIdcoreasset() + "'",
@@ -98,7 +101,7 @@ public class ExpandService {
 			ChurnFeaturesPackageAssets churnFeaturesAssets;
 
 			Iterator<ChurnFeaturesPackageAssets> it = featuresAndAssetsRepo
-					.findByPackageIdGroupedByFeaturesAndAsset(packageId).iterator();
+					.findByPackageIdGroupedByFeaturesAndAssetAllFeatures(packageId).iterator();
 			while (it.hasNext()) {
 
 				churnFeaturesAssets = it.next();
@@ -112,6 +115,8 @@ public class ExpandService {
 				nodes.add(node);
 			}
 		} else {
+			Iterator<ChurnFeaturesPackageAssets> it = featuresAndAssetsRepo
+					.findByPackageIdGroupedByFeaturesAndAsset(packageId).iterator();
 			Set<String> parentFeaturesIds = nodes.stream()
 					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.PARENTFEATURE).map(SankeyNode::getId)
 					.collect(Collectors.toSet());
@@ -381,9 +386,10 @@ public class ExpandService {
 		sankeyResponse.deleteNodesAndLinksById(ALL_FEATURES);
 
 		ChurnParentFeaturesProductPortfolio churnParentFeaturesProductPortfolio;
-		Iterator<ChurnParentFeaturesProductPortfolio> churnParentFeaturesAndProducts = churnParentFeaturesProductPortfolioRepo
-				.findAll().iterator();
+
 		if (sankeyResponse.getNodes().stream().anyMatch(x -> x.getId().equals(ALL_PRODUCTS))) {
+			Iterator<ChurnParentFeaturesProductPortfolio> churnParentFeaturesAndProducts = churnParentFeaturesProductPortfolioRepo
+					.findAllAllProducts().iterator();
 			while (churnParentFeaturesAndProducts.hasNext()) {
 				churnParentFeaturesProductPortfolio = churnParentFeaturesAndProducts.next();
 				sankeyLink = new SankeyLink(ALL_PRODUCTS,
@@ -399,8 +405,10 @@ public class ExpandService {
 			}
 
 		} else {
-
+			Iterator<ChurnParentFeaturesProductPortfolio> churnParentFeaturesAndProducts = churnParentFeaturesProductPortfolioRepo
+					.findAll().iterator();
 			while (churnParentFeaturesAndProducts.hasNext()) {
+
 				churnParentFeaturesProductPortfolio = churnParentFeaturesAndProducts.next();
 				sankeyLink = new SankeyLink(
 						PrefixConstants.PRODUCT_PREFIX + churnParentFeaturesProductPortfolio.getProductId(),
@@ -463,10 +471,10 @@ public class ExpandService {
 
 		}
 		sankeyResponse.deleteNodesAndLinksById(expandId);
-		List<ChurnProductPortfolioAndFeatures> churnProductsAndFeaturesList = productAndFeaturesRepo
-				.findByParentFeatureId(parentFeatureId);
-		if (sankeyResponse.getNodes().stream().filter(x -> x.getId().equals(ALL_PRODUCTS)).count() == 0) {
 
+		if (sankeyResponse.getNodes().stream().filter(x -> x.getId().equals(ALL_PRODUCTS)).count() == 0) {
+			List<ChurnProductPortfolioAndFeatures> churnProductsAndFeaturesList = productAndFeaturesRepo
+					.findByParentFeatureId(parentFeatureId);
 			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
 				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getId_pr(),
 						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
@@ -478,7 +486,8 @@ public class ExpandService {
 
 			}
 		} else {
-
+			List<ChurnProductPortfolioAndFeatures> churnProductsAndFeaturesList = productAndFeaturesRepo
+					.findByParentFeatureIdAllProducts(parentFeatureId);
 			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
 
 				sankeyLink = new SankeyLink(ALL_PRODUCTS, churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
@@ -498,10 +507,11 @@ public class ExpandService {
 
 	public SankeyResponse showLeftPackages(SankeyResponse sankeyResponse) {
 
-		Iterator<ChurnPackageAndProduct> it = assetsAndProductRepo.findGroupedByProductAndPackage().iterator();
 		ChurnPackageAndProduct churnAssetsProducts;
 		SankeyLink sankeyLink;
 		if (sankeyResponse.getNodes().stream().filter(x -> x.getId().equals(ALL_PRODUCTS)).count() == 0) {
+			Iterator<ChurnPackageAndProduct> it = assetsAndProductRepo.findGroupedByProductAndPackage().iterator();
+
 			while (it.hasNext()) {
 				churnAssetsProducts = it.next();
 				sankeyLink = new SankeyLink(PrefixConstants.PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
@@ -514,7 +524,11 @@ public class ExpandService {
 
 			}
 		} else {
+			Iterator<ChurnPackageAndProduct> it = assetsAndProductRepo.findGroupedByProductAndPackageAllProducts()
+					.iterator();
+
 			while (it.hasNext()) {
+
 				churnAssetsProducts = it.next();
 				sankeyLink = new SankeyLink(PrefixConstants.PACKAGE_PREFIX + churnAssetsProducts.getIdPackage() + "'",
 						ALL_PRODUCTS, churnAssetsProducts.getChurn(), SankeyLinkType.PACKAGEPRODUCT);
@@ -572,7 +586,7 @@ public class ExpandService {
 			}
 
 		} else {
-			Iterable<ChurnFeaturesAndPackagesGrouped> it = featuresAndPackagesRepo.getCustomsGroupByFeatures();
+			Iterable<ChurnFeaturesAndPackagesGrouped> it = featuresAndPackagesRepo.getCustomsGroupByPackageAllFeatures();
 			for (ChurnFeaturesAndPackagesGrouped churnFeaturesAssets : it) {
 				sankeyLink = new SankeyLink(ALL_FEATURES,
 						PrefixConstants.PACKAGE_PREFIX + churnFeaturesAssets.getIdpackage(),

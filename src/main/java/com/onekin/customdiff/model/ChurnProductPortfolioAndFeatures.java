@@ -40,6 +40,15 @@ public class ChurnProductPortfolioAndFeatures {
 		this.churn = churn;
 		this.parentFeatureId = parentFeatureid;
 	}
+	
+	public ChurnProductPortfolioAndFeatures(String id, String idFeature, String featuremodified, long churn, int parentFeatureid) {
+		super();
+		this.id = id;
+		this.idFeature = idFeature;
+		this.featuremodified = featuremodified;
+		this.churn = churn;
+		this.parentFeatureId = parentFeatureid;
+	}
 
 	public ChurnProductPortfolioAndFeatures(int id_pr, String pr_name, long churn) {
 		super();

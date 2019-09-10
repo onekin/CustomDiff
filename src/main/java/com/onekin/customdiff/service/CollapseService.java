@@ -47,11 +47,12 @@ public class CollapseService {
 	private ChurnParentFeaturesProductPortfolioRepository churnParentFeaturesProductPortfolioRepo;
 
 	public void collapseLeftFilesIntoPackage(Set<SankeyNode> nodes, List<SankeyLink> sankeyLinks, String packageId) {
-		List<ChurnPackageAndProduct> churnPackageAndProductList = assetsAndProductRepo
-				.findByIdPackage(Integer.valueOf(packageId));
+
 		SankeyNode node;
 		SankeyLink sankeyLink;
 		if (nodes.stream().anyMatch(x -> x.getId().equals(ALL_PRODUCTS))) {
+			List<ChurnPackageAndProduct> churnPackageAndProductList = assetsAndProductRepo
+					.findByIdPackageAllProducts(Integer.valueOf(packageId));
 			for (ChurnPackageAndProduct packageAndProductChurn : churnPackageAndProductList) {
 				sankeyLink = new SankeyLink(
 						PrefixConstants.PACKAGE_PREFIX + packageAndProductChurn.getIdPackage() + "'", ALL_PRODUCTS,
@@ -63,6 +64,8 @@ public class CollapseService {
 					churnPackageAndProductList.get(0).getPackageName(), true, false, SankeyNodeType.LEFTPACKAGE);
 			nodes.add(node);
 		} else {
+			List<ChurnPackageAndProduct> churnPackageAndProductList = assetsAndProductRepo
+					.findByIdPackage(Integer.valueOf(packageId));
 			for (ChurnPackageAndProduct packageAndProductChurn : churnPackageAndProductList) {
 				sankeyLink = new SankeyLink(
 						PrefixConstants.PACKAGE_PREFIX + packageAndProductChurn.getIdPackage() + "'",
@@ -206,10 +209,9 @@ public class CollapseService {
 			}
 		}
 
-		List<ChurnParentFeaturesProductPortfolio> churnParentFeaturesAndProductsList = churnParentFeaturesProductPortfolioRepo
-				.findByParentFeatureId(cleanParentFeature);
-
 		if (sankeyResponse.getNodes().stream().anyMatch(x -> x.getId().equals(ALL_PRODUCTS))) {
+			List<ChurnParentFeaturesProductPortfolio> churnParentFeaturesAndProductsList = churnParentFeaturesProductPortfolioRepo
+					.findByParentFeatureIdAllProducts(cleanParentFeature);
 			for (ChurnParentFeaturesProductPortfolio churnParentFeaturesProductPortfolio : churnParentFeaturesAndProductsList) {
 				sankeyLink = new SankeyLink(ALL_PRODUCTS,
 						PrefixConstants.PARENTFEATURE_PREFIX + churnParentFeaturesProductPortfolio.getIdParentFeature(),
@@ -217,7 +219,15 @@ public class CollapseService {
 						churnParentFeaturesProductPortfolio.getChurn(), SankeyLinkType.PARENTFEATUREPACKAGE);
 				sankeyResponse.getSankeyLinks().add(sankeyLink);
 			}
+			node = new SankeyNode(
+					PrefixConstants.PARENTFEATURE_PREFIX
+							+ churnParentFeaturesAndProductsList.get(0).getIdParentFeature(),
+					churnParentFeaturesAndProductsList.get(0).getParentFeatureName(), true, false,
+					SankeyNodeType.PARENTFEATURE);
+			sankeyResponse.getNodes().add(node);
 		} else {
+			List<ChurnParentFeaturesProductPortfolio> churnParentFeaturesAndProductsList = churnParentFeaturesProductPortfolioRepo
+					.findByParentFeatureId(cleanParentFeature);
 			for (ChurnParentFeaturesProductPortfolio churnParentFeaturesProductPortfolio : churnParentFeaturesAndProductsList) {
 				sankeyLink = new SankeyLink(
 						PrefixConstants.PRODUCT_PREFIX + churnParentFeaturesProductPortfolio.getProductId(),
@@ -226,12 +236,13 @@ public class CollapseService {
 						churnParentFeaturesProductPortfolio.getChurn(), SankeyLinkType.PRODUCTPARENTFEATURE);
 				sankeyResponse.getSankeyLinks().add(sankeyLink);
 			}
+			node = new SankeyNode(
+					PrefixConstants.PARENTFEATURE_PREFIX
+							+ churnParentFeaturesAndProductsList.get(0).getIdParentFeature(),
+					churnParentFeaturesAndProductsList.get(0).getParentFeatureName(), true, false,
+					SankeyNodeType.PARENTFEATURE);
+			sankeyResponse.getNodes().add(node);
 		}
-		node = new SankeyNode(
-				PrefixConstants.PARENTFEATURE_PREFIX + churnParentFeaturesAndProductsList.get(0).getIdParentFeature(),
-				churnParentFeaturesAndProductsList.get(0).getParentFeatureName(), true, false,
-				SankeyNodeType.PARENTFEATURE);
-		sankeyResponse.getNodes().add(node);
 
 	}
 }

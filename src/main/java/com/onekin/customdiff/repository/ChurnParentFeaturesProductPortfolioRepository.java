@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.onekin.customdiff.model.ChurnParentFeaturesProductPortfolio;
+import com.onekin.customdiff.model.SankeyLink;
 
 public interface ChurnParentFeaturesProductPortfolioRepository
 		extends CrudRepository<ChurnParentFeaturesProductPortfolio, String> {
@@ -23,4 +24,10 @@ public interface ChurnParentFeaturesProductPortfolioRepository
 
 	@Query("Select c from ChurnParentFeaturesProductPortfolio c where c.idParentFeature=:parentFeatureId group by c.idParentFeature, c.productId")
 	List<ChurnParentFeaturesProductPortfolio> findByParentFeatureId(@Param("parentFeatureId")int parentFeatureId);
+
+	@Query("Select new ChurnParentFeaturesProductPortfolio(c.id, c.idParentFeature, c.parentFeatureName, c.productId, c.productName, sum(churn)) from ChurnParentFeaturesProductPortfolio c where c.idParentFeature!='No Feature' GROUP BY c.idParentFeature")
+	Iterable<ChurnParentFeaturesProductPortfolio> findAllAllProducts();
+
+	@Query("Select new ChurnParentFeaturesProductPortfolio(c.id, c.idParentFeature, c.parentFeatureName, c.productId, c.productName, sum(churn)) from ChurnParentFeaturesProductPortfolio c where c.idParentFeature=:parentFeatureId group by c.idParentFeature")
+	List<ChurnParentFeaturesProductPortfolio> findByParentFeatureIdAllProducts(@Param("parentFeatureId")int parentFeatureId);
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.onekin.customdiff.model.ChurnCoreAssetsAndFeaturesByProduct;
 import com.onekin.customdiff.model.ChurnPackageAndProduct;
+import com.onekin.customdiff.model.SankeyLink;
 
 @Transactional
 public interface ChurnCoreAssetsAndFeaturesByProductRepository
@@ -65,5 +66,17 @@ public interface ChurnCoreAssetsAndFeaturesByProductRepository
 			+ "c.pr_name, c.ca_name, c.ca_path, c.packageId, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c where  c.idcoreasset in (:leftAssetsIds) GROUP BY c.idproductrelease ,c.idcoreasset")
 	Iterable<ChurnCoreAssetsAndFeaturesByProduct> findByIdcoreassetIn(
 			@Param("leftAssetsIds") Set<Integer> leftAssetsIds);
+
+	@Query(value = "SELECT new ChurnCoreAssetsAndFeaturesByProduct(c.id, c.idproductrelease, c.featureId, c.idcoreasset, "
+			+ "c.pr_name, c.ca_name, c.ca_path, c.packageId, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c where c.packageId=:idPackage and featureId!='No Feature'  GROUP BY c.idcoreasset")
+	Iterable<ChurnCoreAssetsAndFeaturesByProduct> findByPackageIdGroupByAssetIdAllProducts(@Param("idPackage") int idPackage);
+
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE c.featureId!='No Feature' GROUP BY c.packageId")
+	Iterable<ChurnPackageAndProduct> findGroupedByProductAndPackageAllProducts();
+
+	@Query(value = "SELECT new com.onekin.customdiff.model.ChurnPackageAndProduct(c.id, c.packageId, c.idproductrelease, "
+			+ "c.pr_name, c.packageName, SUM(c.churn)) FROM ChurnCoreAssetsAndFeaturesByProduct c WHERE c.packageId = :packageId and c.featureId!='No Feature' GROUP BY c.packageId")
+	List<ChurnPackageAndProduct> findByIdPackageAllProducts(@Param(value = "packageId") Integer packageId);
 
 }
