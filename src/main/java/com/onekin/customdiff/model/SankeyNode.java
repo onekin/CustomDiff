@@ -1,8 +1,11 @@
 package com.onekin.customdiff.model;
 
+import com.onekin.customdiff.model.enums.SankeyNodeType;
+
 public class SankeyNode {
 
 	private String id;
+	private String parentId;
 	private String name;
 	private SankeyNodeType sankeyNodeType;
 
@@ -102,6 +105,14 @@ public class SankeyNode {
 
 	public void setCollapsable(boolean collapsable) {
 		this.collapsable = collapsable;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 
 }

@@ -1,9 +1,11 @@
 package com.onekin.customdiff.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 public class Formatting {
 
@@ -100,7 +102,7 @@ public class Formatting {
 
 	public static String decodeFromBase64(String encoded) {
 
-		byte[] valueDecoded = Base64.decode(encoded);
+		byte[] valueDecoded = new Base64().decode(encoded);
 		// System.out.println("Decoded value is: " + new String(valueDecoded));
 
 		return new String(valueDecoded);
@@ -127,6 +129,17 @@ public class Formatting {
 		}
 
 		return text;
+	}
+	
+	public static Set<Integer> cleanListOfIds(Set<String> dirtyIds){
+		Set<Integer> cleanIds = new HashSet<>();
+		for(String dirtyId: dirtyIds) {
+			dirtyId = dirtyId.split("-")[1];
+			dirtyId = dirtyId.replace("'", "");
+			cleanIds.add(Integer.valueOf(dirtyId));
+		}
+		return cleanIds;
+		
 	}
 
 }

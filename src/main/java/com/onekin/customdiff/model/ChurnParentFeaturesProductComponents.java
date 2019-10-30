@@ -8,7 +8,7 @@ import javax.persistence.Id;
 
 @Entity
 @Table(name = "churn_parent_features_product_packages")
-public class Churn_ParentFeatures_ProductComponents {
+public class ChurnParentFeaturesProductComponents {
 	@Id String id;
 	int id_parentfeature; 
 	String parentfeaturename;
@@ -19,9 +19,24 @@ public class Churn_ParentFeatures_ProductComponents {
 	int isroot;
 	int added;
 	int deleted;
-	int  churn;
+	long  churn;
 	
-	public Churn_ParentFeatures_ProductComponents() {}
+	public ChurnParentFeaturesProductComponents() {}
+
+	
+	
+	public ChurnParentFeaturesProductComponents(String id, int id_parentfeature, String parentfeaturename,
+			String package_name, int idpackage, long churn) {
+		super();
+		this.id = id;
+		this.id_parentfeature = id_parentfeature;
+		this.parentfeaturename = parentfeaturename;
+		this.package_name = package_name;
+		this.idpackage = idpackage;
+		this.churn = churn;
+	}
+
+
 
 	public String getId() {
 		return id;
@@ -95,11 +110,11 @@ public class Churn_ParentFeatures_ProductComponents {
 		this.deleted = deleted;
 	}
 
-	public int getChurn() {
+	public long getChurn() {
 		return churn;
 	}
 
-	public void setChurn(int churn) {
+	public void setChurn(long churn) {
 		this.churn = churn;
 	}
 

@@ -1,19 +1,19 @@
 package com.onekin.customdiff.model;
 
-import java.util.List;
+import com.onekin.customdiff.model.enums.SankeyLinkType;
 
-public class SankeyItem {
+public class SankeyLink {
 
 	private String from;
 	private String to;
 	private long weight;
 	private SankeyLinkType sankeyLinkType;
 
-	public SankeyItem() {
+	public SankeyLink() {
 		super();
 	}
 
-	public SankeyItem(String from, String to, int weight, SankeyLinkType sankeyType) {
+	public SankeyLink(String from, String to, int weight, SankeyLinkType sankeyType) {
 		super();
 		this.from = from;
 		this.to = to;
@@ -21,9 +21,8 @@ public class SankeyItem {
 		this.sankeyLinkType = sankeyType;
 
 	}
-	
 
-	public SankeyItem(String from, String to, long weight, SankeyLinkType sankeyType) {
+	public SankeyLink(String from, String to, long weight, SankeyLinkType sankeyType) {
 		super();
 		this.from = from;
 		this.to = to;
@@ -59,12 +58,6 @@ public class SankeyItem {
 	@Override
 	public String toString() {
 		return "[" + from + "," + to + "," + weight + "]";
-	}
-
-	public static List<SankeyItem> deleteFromListById(List<SankeyItem> sankeyData, String expandId) {
-		sankeyData.removeIf(x -> x.from.equals(expandId) | x.to.equals(expandId));
-		return sankeyData;
-
 	}
 
 	public SankeyLinkType getSankeyLinkType() {

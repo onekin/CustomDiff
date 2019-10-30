@@ -1,24 +1,18 @@
 package com.onekin.customdiff.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "churn_packages_and_product")
+
 public class ChurnPackageAndProduct {
 
-	@Id
 	private String id;
-
 	private int idPackage;
 	private int idProductRelease;
 	private String prName;
 	private String packageName;
-	private int churn;
+	private long churn;
 
 	public ChurnPackageAndProduct(String id, int idPackage, int idProductRelease, String prName, String packageName,
-			int churn) {
+			long churn) {
 		super();
 		this.id = id;
 		this.idPackage = idPackage;
@@ -44,8 +38,8 @@ public class ChurnPackageAndProduct {
 		return idPackage;
 	}
 
-	public void setIdPackage(int idPackage) {
-		this.idPackage = idPackage;
+	public void setIdPackage(int packageId) {
+		this.idPackage = packageId;
 	}
 
 	public int getIdProductRelease() {
@@ -72,11 +66,11 @@ public class ChurnPackageAndProduct {
 		this.packageName = packageName;
 	}
 
-	public int getChurn() {
+	public long getChurn() {
 		return churn;
 	}
 
-	public void setChurn(int churn) {
+	public void setChurn(long churn) {
 		this.churn = churn;
 	}
 
