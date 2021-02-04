@@ -43,6 +43,18 @@ public class ExpandController {
 
 	}
 
+
+	@ResponseBody
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/feature/{expandId}")
+	public SankeyResponse expandFeature(@PathVariable(name = "expandId") String expandId,
+											  @RequestBody SankeyResponse sankeyResponse, @RequestParam(name = "features") List<String> featureIds) {
+
+			return expandService.expandFeature(sankeyResponse, expandId);
+
+	}
+
+
 	@ResponseBody
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/left-package/{expandId}")

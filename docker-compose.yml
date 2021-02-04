@@ -25,7 +25,7 @@ services:
   db:
     image: mysql:5.7.28
     ports:
-      - "33306:3306"
+      - "33307:3306"
     restart: always
     environment:
       MYSQL_DATABASE: customdiff

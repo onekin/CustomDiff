@@ -47,6 +47,7 @@ public class LinkCustomizationDiffController {
 				.getProductAndFeatureCustomizations(from, to);
 		model.addAttribute("customizations", productAndFeatureCustomizations);
 		model.addAttribute("linkNodes", to + " and "+ productAndFeatureCustomizations.get(0).getPrname());
+		model.addAttribute("tangledFeatures", linkCustomizationDiffService.getTangledFeatures(productAndFeatureCustomizations,to));
 		return "links-diffs";
 	}
 

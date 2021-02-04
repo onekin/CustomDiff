@@ -5,29 +5,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.onekin.customdiff.model.*;
+import com.onekin.customdiff.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.onekin.customdiff.model.ChurnCoreAssetsAndFeaturesByProduct;
-import com.onekin.customdiff.model.ChurnFeaturesAndPackagesGrouped;
-import com.onekin.customdiff.model.ChurnFeaturesPackageAssets;
-import com.onekin.customdiff.model.ChurnPackageAndProduct;
-import com.onekin.customdiff.model.ChurnParentFeaturesAndCoreAssets;
-import com.onekin.customdiff.model.ChurnParentFeaturesProductComponents;
-import com.onekin.customdiff.model.ChurnParentFeaturesProductPortfolio;
-import com.onekin.customdiff.model.ChurnProductPortfolioAndFeatures;
-import com.onekin.customdiff.model.SankeyLink;
-import com.onekin.customdiff.model.SankeyNode;
-import com.onekin.customdiff.model.SankeyResponse;
 import com.onekin.customdiff.model.enums.SankeyLinkType;
 import com.onekin.customdiff.model.enums.SankeyNodeType;
-import com.onekin.customdiff.repository.ChurnCoreAssetsAndFeaturesByProductRepository;
-import com.onekin.customdiff.repository.ChurnFeaturesComponentPackagesRepository;
-import com.onekin.customdiff.repository.ChurnFeaturesPackageAssetsRepository;
-import com.onekin.customdiff.repository.ChurnParentFeaturesAndCoreAssetsRepository;
-import com.onekin.customdiff.repository.ChurnParentFeaturesProductComponentsRepository;
-import com.onekin.customdiff.repository.ChurnParentFeaturesProductPortfolioRepository;
-import com.onekin.customdiff.repository.ChurnProductPortfolioAndFeaturesRepository;
 import com.onekin.customdiff.utils.Formatting;
 import com.onekin.customdiff.utils.PrefixConstants;
 
@@ -587,4 +571,84 @@ public class ExpandService {
 		return sankeyResponse;
 	}
 
+    public SankeyResponse expandFeature(SankeyResponse sankeyResponse, String expandId) {
+		int featureId = Integer.parseInt(expandId.split("-")[1]);
+
+		SankeyLink sankeyLink;
+		SankeyNode node;
+
+		if (sankeyResponse.getNodes().stream().anyMatch(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTASSET
+				|| x.getSankeyNodeType() == SankeyNodeType.RIGHTPACKAGE)) {
+			Set<String> assetsIds = sankeyResponse.getNodes().stream()
+					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTASSET).map(SankeyNode::getId)
+					.collect(Collectors.toSet());
+			Set<String> packagesIds = sankeyResponse.getNodes().stream()
+					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTPACKAGE).map(SankeyNode::getId)
+					.collect(Collectors.toSet());
+
+			if (!assetsIds.isEmpty()) {
+				//List<ChurnFeaturesPackageAssets> featuresAndCoreAssetsList = featuresAndAssetsRepo
+				//		.findByFeatureIdCoreAssetIdInAndGroupByFeatures(Formatting.cleanListOfIds(assetsIds),
+				//				featureId);
+
+				for (ChurnFeaturesPackageAssets churnFeaturesAndCoreAssets : featuresAndCoreAssetsList) {
+					sankeyLink = new SankeyLink(churnFeaturesAndCoreAssets.getFeatureId(),
+							PrefixConstants.ASSET_PREFIX + churnFeaturesAndCoreAssets.getIdcoreasset(),
+							churnFeaturesAndCoreAssets.getChurn(), SankeyLinkType.FEATUREASSET);
+					sankeyResponse.getSankeyLinks().add(sankeyLink);
+
+				}
+			}
+			if (!packagesIds.isEmpty()) {
+
+				List<ChurnFeaturesAndPackagesGrouped> churnFeatureAndPackageList = featuresAndPackagesRepo
+						.findByParentFeatureAndPackageIdsInAndGroupByFeatures(Formatting.cleanListOfIds(packagesIds),
+								parentFeatureId);
+
+				for (ChurnFeaturesAndPackagesGrouped churnParentFeatureAndProd : churnFeatureAndPackageList) {
+					sankeyLink = new SankeyLink(churnParentFeatureAndProd.getIdfeature(),
+							PrefixConstants.PACKAGE_PREFIX + churnParentFeatureAndProd.getIdpackage(),
+							churnParentFeatureAndProd.getChurn(), SankeyLinkType.FEATUREPACKAGE);
+					sankeyResponse.getSankeyLinks().add(sankeyLink);
+
+				}
+			}
+
+		}
+		sankeyResponse.deleteNodesAndLinksById(expandId);
+
+		ChurnFeaturesProductPortfolioRepository productAndFeatureSiblingRepo;
+		List<ChurnProductsAndFeatureSiblings> churnProductsAndFeaturesList = productAndFeatureSiblingRepo
+				.findByParentFeatureId(featureId);
+		if (sankeyResponse.getNodes().stream().filter(x -> x.getId().equals(ALL_PRODUCTS)).count() == 0) {
+
+			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
+				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
+				sankeyResponse.getSankeyLinks().add(sankeyLink);
+				node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
+						true, SankeyNodeType.FEATURE);
+				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
+				sankeyResponse.getNodes().add(node);
+
+			}
+		} else {
+
+			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
+
+				sankeyLink = new SankeyLink(ALL_PRODUCTS, churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
+						SankeyLinkType.PRODUCTFEATURE);
+				sankeyResponse.getSankeyLinks().add(sankeyLink);
+				node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
+						true, SankeyNodeType.FEATURE);
+				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
+				sankeyResponse.getNodes().add(node);
+
+			}
+
+		}
+
+		return sankeyResponse;
+
+    }
 }

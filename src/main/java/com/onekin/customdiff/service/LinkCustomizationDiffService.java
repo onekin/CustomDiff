@@ -1,5 +1,6 @@
 package com.onekin.customdiff.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,18 @@ public class LinkCustomizationDiffService {
 
 	public List<CustomsByFeatureAndCoreAsset> getFeatureAndPackageCustomizations(String featureId, String packageId) {
 		int packageIdCleaned = Integer.valueOf(packageId.split("-")[1].replace("'", ""));
-
-		return customsByFeatureAndCoreAssetRepo.findByIdpackageAndIdfeature(packageIdCleaned, featureId);
+		return  customsByFeatureAndCoreAssetRepo.findByIdpackageAndIdfeature(packageIdCleaned, featureId);
 	}
 
+	public List<String> getTangledFeatures(List<CustomsByFeatureAndCoreAsset> customizations, String featureName) {
+		List<String> tangledFeatures = new ArrayList<>();
+		for(CustomsByFeatureAndCoreAsset customByFeatureAndPackage: customizations){
+			List<String> featureNames = customsByFeatureAndCoreAssetRepo.findFeatureByCustomId(customByFeatureAndPackage.getIdcustomization());
+			featureNames.remove(featureName);
+			if(!featureNames.isEmpty()) {
+				tangledFeatures.addAll(featureNames);
+			}
+		}
+		return tangledFeatures;
+	}
 }

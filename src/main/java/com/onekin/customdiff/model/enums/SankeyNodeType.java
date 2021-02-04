@@ -8,6 +8,7 @@ public enum SankeyNodeType {
 	FEATURE, 
 	LEFTASSET,
 	RIGHTASSET,
-	PRODUCT
+	PRODUCT,
+	FEATURESIBLING
 
 }

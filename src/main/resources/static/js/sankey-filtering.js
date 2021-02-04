@@ -7,6 +7,9 @@
 				}else if($(this).attr("data-type").toUpperCase()=="PARENTFEATURE"){
 					// CAMBIAR POR PARENT FEATURE
 				    urlString = "/expand/parent-feature/"+$(this).attr("data-id")+"?features="+selectedFeatures;
+				}else if($(this).attr("data-type").toUpperCase()=="FEATURE"){
+					urlString = "/expand/feature/"+$(this).attr("data-id")+"?features="+selectedFeatures
+				}
 				}else if($(this).attr("data-type").toUpperCase()=="LEFTPACKAGE"){
 					urlString = "/expand/left-package/"+$(this).attr("data-id")+"?features="+selectedFeatures
 				}else if($(this).attr("data-type").toUpperCase()=="RIGHTPACKAGE"){

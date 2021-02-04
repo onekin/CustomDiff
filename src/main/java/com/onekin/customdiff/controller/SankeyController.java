@@ -1,10 +1,6 @@
 package com.onekin.customdiff.controller;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
@@ -50,11 +46,32 @@ public class SankeyController {
 	private EntityService entityService;
 
 	@GetMapping("/")
-	public String loadInitialData(Model model) {
-		model.addAttribute("features", entityService.getCustomizedFeatures());
+	public String loadInitialData(@RequestParam(name = "featureName")String featureName,Model model) {
 		List<SankeyLink> sankeyInitialLinks = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
-		mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
+
+		if(featureName!=null){
+			SankeyLink sankeyLink;
+			Iterator<ChurnProductPortfolioAndFeatures> it = sankeyFilterService
+					.getProductAndFeaturesChurnInFeatures(new HashSet<String>(Arrays.asList(featureName)));
+			ChurnProductPortfolioAndFeatures churnProdFeature;
+			while (it.hasNext()) {
+				churnProdFeature = it.next();
+				if (!churnProdFeature.getIdFeature().equals("No Feature")) {
+					sankeyLink = new SankeyLink(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+							churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
+					sankeyInitialLinks.add(sankeyLink);
+					nodes.add(new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
+							true, SankeyNodeType.FEATURE));
+					nodes.add(new SankeyNode(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+							churnProdFeature.getPr_name(), false, false, SankeyNodeType.PRODUCT));
+				}
+			}
+
+		}else {
+			mainService.setInitialSankeyNodesAndLinks(sankeyInitialLinks, nodes);
+		}
+		model.addAttribute("features", entityService.getCustomizedFeatures());
 		model.addAttribute("sankeyData", sankeyInitialLinks);
 		model.addAttribute("nodes", nodes);
 		model.addAttribute("products", entityService.getProducts());
