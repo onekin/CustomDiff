@@ -9,7 +9,6 @@
 				    urlString = "/expand/parent-feature/"+$(this).attr("data-id")+"?features="+selectedFeatures;
 				}else if($(this).attr("data-type").toUpperCase()=="FEATURE"){
 					urlString = "/expand/feature/"+$(this).attr("data-id")+"?features="+selectedFeatures
-				}
 				}else if($(this).attr("data-type").toUpperCase()=="LEFTPACKAGE"){
 					urlString = "/expand/left-package/"+$(this).attr("data-id")+"?features="+selectedFeatures
 				}else if($(this).attr("data-type").toUpperCase()=="RIGHTPACKAGE"){
@@ -65,7 +64,33 @@
 		       		            data: data.sankeyLinks,
 		       		            nodes: data.nodes,
 		       		         	
-		       		        }
+		       		        },
+									sankey: {
+										nodePadding: 25,
+										dataLabels: {
+											style: {
+												color: 'black',
+
+
+											},
+											useHTML: true,
+											enabled: true,
+											nodeFormatter: function () {
+												if(this.point.expandable==true && this.point.collapsable==true){
+													return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>'+
+														'<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+												}else if(this.point.expandable==true){
+													return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+												}else if(this.point.collapsable==true){
+													return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+												}else{
+													return this.point.name
+												}
+
+											}
+										}
+									}
+
 	       				});
 		       			expandAndCollapse();
 		            }
@@ -132,7 +157,32 @@
 			       		            data: data.sankeyLinks,
 			       		            nodes: data.nodes,
 			       		         	
-			       		        }
+			       		        },
+										sankey: {
+											nodePadding: 25,
+											dataLabels: {
+												style: {
+													color: 'black',
+
+
+												},
+												useHTML: true,
+												enabled: true,
+												nodeFormatter: function () {
+													if(this.point.expandable==true && this.point.collapsable==true){
+														return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>'+
+															'<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+													}else if(this.point.expandable==true){
+														return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+													}else if(this.point.collapsable==true){
+														return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
+													}else{
+														return this.point.name
+													}
+
+												}
+											}
+										}
 		       				});
 			       			expandAndCollapse();
 			            }

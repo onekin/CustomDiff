@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+import com.onekin.customdiff.utils.PrefixConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -46,7 +47,7 @@ public class SankeyController {
 	private EntityService entityService;
 
 	@GetMapping("/")
-	public String loadInitialData(@RequestParam(name = "featureName")String featureName,Model model) {
+	public String loadInitialData(@RequestParam(name = "featureName",required = false)String featureName,Model model) {
 		List<SankeyLink> sankeyInitialLinks = new ArrayList<>();
 		Set<SankeyNode> nodes = new HashSet<>();
 
@@ -59,9 +60,9 @@ public class SankeyController {
 				churnProdFeature = it.next();
 				if (!churnProdFeature.getIdFeature().equals("No Feature")) {
 					sankeyLink = new SankeyLink(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
-							churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
+							PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
 					sankeyInitialLinks.add(sankeyLink);
-					nodes.add(new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
+					nodes.add(new SankeyNode(PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
 							true, SankeyNodeType.FEATURE));
 					nodes.add(new SankeyNode(PRODUCT_PREFIX + churnProdFeature.getId_pr(),
 							churnProdFeature.getPr_name(), false, false, SankeyNodeType.PRODUCT));
@@ -196,7 +197,7 @@ public class SankeyController {
 			List<ChurnFeaturesPackageAssets> featuresAndAssetsChurns = sankeyFilterService
 					.getFeaturesAndAssetsChurnInFeaturesAndInAssets(featureIds, rightAssets);
 			for (ChurnFeaturesPackageAssets churnFeaturesAssets : featuresAndAssetsChurns) {
-				sankeyLink = new SankeyLink(churnFeaturesAssets.getFeatureId(),
+				sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnFeaturesAssets.getFeatureId(),
 						ASSET_PREFIX + churnFeaturesAssets.getIdcoreasset(), churnFeaturesAssets.getChurn(),
 						SankeyLinkType.FEATUREASSET);
 				sankeyData.add(sankeyLink);
@@ -219,7 +220,7 @@ public class SankeyController {
 			it2.addAll(sankeyFilterService.getFeaturesAndPackagesChurnInFeaturesAndNotInPackages(featureIds,
 					allRightPackages));
 			for (ChurnFeaturesAndPackagesGrouped churnFeaturesPackages : it2) {
-				sankeyLink = new SankeyLink(churnFeaturesPackages.getIdfeature(),
+				sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX + churnFeaturesPackages.getIdfeature(),
 						PACKAGE_PREFIX + churnFeaturesPackages.getIdpackage(), churnFeaturesPackages.getChurn(),
 						SankeyLinkType.FEATUREPACKAGE);
 				sankeyData.add(sankeyLink);

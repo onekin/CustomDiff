@@ -1,5 +1,6 @@
 package com.onekin.customdiff;
 
+import com.onekin.customdiff.dao.DaoMarker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,7 +15,7 @@ import com.onekin.customdiff.service.ServiceMarker;
 
 
 @EnableAutoConfiguration
-@ComponentScan(basePackageClasses= {ControllerMarker.class, ServiceMarker.class, RepositoryMarker.class})
+@ComponentScan(basePackageClasses= {ControllerMarker.class, ServiceMarker.class, RepositoryMarker.class, DaoMarker.class})
 @Import(MvcConfig.class)
 public class CustomDiffApplication extends SpringBootServletInitializer {
  

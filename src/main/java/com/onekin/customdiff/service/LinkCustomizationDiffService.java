@@ -1,7 +1,9 @@
 package com.onekin.customdiff.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class LinkCustomizationDiffService {
 
 	public List<CustomsByFeatureAndCoreAsset> getProductAndFeatureCustomizations(String productId, String featureId) {
 		int productIdCleaned = Integer.valueOf(productId.split("-")[1]);
+		featureId = featureId.split("-")[1];
 		return customsByFeatureAndCoreAssetRepo.findByIdproductreleaseAndIdfeature(productIdCleaned, featureId);
 	}
 
@@ -41,14 +44,17 @@ public class LinkCustomizationDiffService {
 
 	public List<CustomsByFeatureAndCoreAsset> getFeatureAndPackageCustomizations(String featureId, String packageId) {
 		int packageIdCleaned = Integer.valueOf(packageId.split("-")[1].replace("'", ""));
+		featureId = featureId.split("-")[1];
 		return  customsByFeatureAndCoreAssetRepo.findByIdpackageAndIdfeature(packageIdCleaned, featureId);
 	}
 
-	public List<String> getTangledFeatures(List<CustomsByFeatureAndCoreAsset> customizations, String featureName) {
-		List<String> tangledFeatures = new ArrayList<>();
+	public Set<String> getTangledFeatures(List<CustomsByFeatureAndCoreAsset> customizations, String featureName) {
+		Set<String> tangledFeatures = new HashSet<>();
+		if(featureName.contains("fe-")){
+			featureName=featureName.split("-")[1];
+		}
 		for(CustomsByFeatureAndCoreAsset customByFeatureAndPackage: customizations){
 			List<String> featureNames = customsByFeatureAndCoreAssetRepo.findFeatureByCustomId(customByFeatureAndPackage.getIdcustomization());
-			featureNames.remove(featureName);
 			if(!featureNames.isEmpty()) {
 				tangledFeatures.addAll(featureNames);
 			}

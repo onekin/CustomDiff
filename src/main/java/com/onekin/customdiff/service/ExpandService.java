@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.onekin.customdiff.dao.ChurnFeaturesProductPortfolioDAO;
 import com.onekin.customdiff.model.*;
 import com.onekin.customdiff.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class ExpandService {
 
 	@Autowired
 	private ChurnParentFeaturesAndCoreAssetsRepository parentFeaturesAndCoreAssetsRepo;
+
+	@Autowired
+	private ChurnFeaturesProductPortfolioDAO productAndFeatureSiblingDao;
+
 
 	public void expandLeftPackage(List<SankeyLink> sankeyLinks, Set<SankeyNode> nodes, String idPackage) {
 		Iterator<ChurnCoreAssetsAndFeaturesByProduct> it = assetsAndProductRepo
@@ -126,7 +131,7 @@ public class ExpandService {
 						.findByPackageIdAndFeaturesInGroupedByFeaturesAndAsset(packageId, featureIds);
 
 				for (ChurnFeaturesPackageAssets churnFeaturesAsset : featuresAndAssetsList) {
-					sankeyLink = new SankeyLink(churnFeaturesAsset.getFeatureId(),
+					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnFeaturesAsset.getFeatureId(),
 							PrefixConstants.ASSET_PREFIX + churnFeaturesAsset.getIdcoreasset(),
 							churnFeaturesAsset.getChurn(), SankeyLinkType.FEATUREASSET);
 					sankeyLinks.add(sankeyLink);
@@ -295,10 +300,10 @@ public class ExpandService {
 				while (it.hasNext()) {
 					churnProdFeature = it.next();
 					sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getId_pr(),
-							churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
+							PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
 							SankeyLinkType.PRODUCTFEATURE);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
-					node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
+					node = new SankeyNode(PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
 							false, SankeyNodeType.FEATURE);
 					node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
 					sankeyResponse.getNodes().add(node);
@@ -423,7 +428,7 @@ public class ExpandService {
 						.findByParentFeatureIdCoreAssetIdInAndGroupByFeatures(Formatting.cleanListOfIds(assetsIds),
 								parentFeatureId);
 				for (ChurnFeaturesPackageAssets churnFeaturesAndCoreAssets : featuresAndCoreAssetsList) {
-					sankeyLink = new SankeyLink(churnFeaturesAndCoreAssets.getFeatureId(),
+					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnFeaturesAndCoreAssets.getFeatureId(),
 							PrefixConstants.ASSET_PREFIX + churnFeaturesAndCoreAssets.getIdcoreasset(),
 							churnFeaturesAndCoreAssets.getChurn(), SankeyLinkType.FEATUREASSET);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
@@ -437,7 +442,7 @@ public class ExpandService {
 								parentFeatureId);
 
 				for (ChurnFeaturesAndPackagesGrouped churnParentFeatureAndProd : churnFeatureAndPackageList) {
-					sankeyLink = new SankeyLink(churnParentFeatureAndProd.getIdfeature(),
+					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnParentFeatureAndProd.getIdfeature(),
 							PrefixConstants.PACKAGE_PREFIX + churnParentFeatureAndProd.getIdpackage(),
 							churnParentFeatureAndProd.getChurn(), SankeyLinkType.FEATUREPACKAGE);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
@@ -453,9 +458,9 @@ public class ExpandService {
 
 			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
 				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getId_pr(),
-						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
+						PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
 				sankeyResponse.getSankeyLinks().add(sankeyLink);
-				node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
+				node = new SankeyNode(PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
 						true, SankeyNodeType.FEATURE);
 				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
 				sankeyResponse.getNodes().add(node);
@@ -465,10 +470,10 @@ public class ExpandService {
 
 			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
 
-				sankeyLink = new SankeyLink(ALL_PRODUCTS, churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
+				sankeyLink = new SankeyLink(ALL_PRODUCTS, PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
 						SankeyLinkType.PRODUCTFEATURE);
 				sankeyResponse.getSankeyLinks().add(sankeyLink);
-				node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
+				node = new SankeyNode(PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
 						true, SankeyNodeType.FEATURE);
 				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
 				sankeyResponse.getNodes().add(node);
@@ -527,7 +532,7 @@ public class ExpandService {
 			if (featureIds.size() > 0) {
 				Iterable<ChurnFeaturesAndPackagesGrouped> it = featuresAndPackagesRepo.findByIdfeatureIn(featureIds);
 				for (ChurnFeaturesAndPackagesGrouped churnFeaturesAssets : it) {
-					sankeyLink = new SankeyLink(churnFeaturesAssets.getIdfeature(),
+					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnFeaturesAssets.getIdfeature(),
 							PrefixConstants.PACKAGE_PREFIX + churnFeaturesAssets.getIdpackage(),
 							churnFeaturesAssets.getChurn(), SankeyLinkType.PARENTFEATUREPACKAGE);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
@@ -572,82 +577,43 @@ public class ExpandService {
 	}
 
     public SankeyResponse expandFeature(SankeyResponse sankeyResponse, String expandId) {
-		int featureId = Integer.parseInt(expandId.split("-")[1]);
+		String featureId = expandId.split("-")[1];
 
 		SankeyLink sankeyLink;
 		SankeyNode node;
 
-		if (sankeyResponse.getNodes().stream().anyMatch(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTASSET
-				|| x.getSankeyNodeType() == SankeyNodeType.RIGHTPACKAGE)) {
-			Set<String> assetsIds = sankeyResponse.getNodes().stream()
-					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTASSET).map(SankeyNode::getId)
-					.collect(Collectors.toSet());
-			Set<String> packagesIds = sankeyResponse.getNodes().stream()
-					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTPACKAGE).map(SankeyNode::getId)
-					.collect(Collectors.toSet());
 
-			if (!assetsIds.isEmpty()) {
-				//List<ChurnFeaturesPackageAssets> featuresAndCoreAssetsList = featuresAndAssetsRepo
-				//		.findByFeatureIdCoreAssetIdInAndGroupByFeatures(Formatting.cleanListOfIds(assetsIds),
-				//				featureId);
 
-				for (ChurnFeaturesPackageAssets churnFeaturesAndCoreAssets : featuresAndCoreAssetsList) {
-					sankeyLink = new SankeyLink(churnFeaturesAndCoreAssets.getFeatureId(),
-							PrefixConstants.ASSET_PREFIX + churnFeaturesAndCoreAssets.getIdcoreasset(),
-							churnFeaturesAndCoreAssets.getChurn(), SankeyLinkType.FEATUREASSET);
-					sankeyResponse.getSankeyLinks().add(sankeyLink);
-
-				}
-			}
-			if (!packagesIds.isEmpty()) {
-
-				List<ChurnFeaturesAndPackagesGrouped> churnFeatureAndPackageList = featuresAndPackagesRepo
-						.findByParentFeatureAndPackageIdsInAndGroupByFeatures(Formatting.cleanListOfIds(packagesIds),
-								parentFeatureId);
-
-				for (ChurnFeaturesAndPackagesGrouped churnParentFeatureAndProd : churnFeatureAndPackageList) {
-					sankeyLink = new SankeyLink(churnParentFeatureAndProd.getIdfeature(),
-							PrefixConstants.PACKAGE_PREFIX + churnParentFeatureAndProd.getIdpackage(),
-							churnParentFeatureAndProd.getChurn(), SankeyLinkType.FEATUREPACKAGE);
-					sankeyResponse.getSankeyLinks().add(sankeyLink);
-
-				}
-			}
-
-		}
-		sankeyResponse.deleteNodesAndLinksById(expandId);
-
-		ChurnFeaturesProductPortfolioRepository productAndFeatureSiblingRepo;
-		List<ChurnProductsAndFeatureSiblings> churnProductsAndFeaturesList = productAndFeatureSiblingRepo
-				.findByParentFeatureId(featureId);
+		List<ChurnProductsAndFeatureSiblings> churnProductsAndFeaturesList = productAndFeatureSiblingDao.getChurnFeatureSiblingProducts(featureId);
+		productAndFeatureSiblingDao.setFeatureSiblingsExpression(churnProductsAndFeaturesList);
 		if (sankeyResponse.getNodes().stream().filter(x -> x.getId().equals(ALL_PRODUCTS)).count() == 0) {
 
-			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
-				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getId_pr(),
-						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
+			for (ChurnProductsAndFeatureSiblings churnProdFeatureSibling : churnProductsAndFeaturesList) {
+				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeatureSibling.getIdProduct(),
+						churnProdFeatureSibling.getExpression(), churnProdFeatureSibling.getChurn(), SankeyLinkType.PRODUCTFEATURESIBLING);
 				sankeyResponse.getSankeyLinks().add(sankeyLink);
-				node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
-						true, SankeyNodeType.FEATURE);
-				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
+				node = new SankeyNode(PrefixConstants.FEATURE_SIBLING+churnProdFeatureSibling.getIdFeatureSibling(), churnProdFeatureSibling.getExpression(), false,
+						true, SankeyNodeType.FEATURESIBLING);
+				node.setParentId(PrefixConstants.FEATURE_PREFIX + featureId);
 				sankeyResponse.getNodes().add(node);
 
 			}
 		} else {
 
-			for (ChurnProductPortfolioAndFeatures churnProdFeature : churnProductsAndFeaturesList) {
+			for (ChurnProductsAndFeatureSiblings churnProdFeatureSibling : churnProductsAndFeaturesList) {
 
-				sankeyLink = new SankeyLink(ALL_PRODUCTS, churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
+				sankeyLink = new SankeyLink(ALL_PRODUCTS, churnProdFeatureSibling.getExpression(), churnProdFeatureSibling.getChurn(),
 						SankeyLinkType.PRODUCTFEATURE);
 				sankeyResponse.getSankeyLinks().add(sankeyLink);
-				node = new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), true,
-						true, SankeyNodeType.FEATURE);
-				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
+				node = new SankeyNode(PrefixConstants.FEATURE_SIBLING+churnProdFeatureSibling.getIdFeatureSibling(), churnProdFeatureSibling.getExpression(), false,
+						true, SankeyNodeType.FEATURESIBLING);
+				node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + featureId);
 				sankeyResponse.getNodes().add(node);
 
 			}
 
 		}
-
+		sankeyResponse.deleteNodesAndLinksById(expandId);
 		return sankeyResponse;
 
     }
