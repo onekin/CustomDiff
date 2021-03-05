@@ -502,14 +502,13 @@
 		var nodes = [[${nodes}]];
 		var sankeyChart = Highcharts.chart('container', {
     	credits:{
-		  		enabled:false
+		  		enabled:true
  
         },
 		chart: {
 		        type: 'sankey',
 		        spacingBottom: 15,
 		        spacingTop: 30,
-
 		        
 		},
 		 plotOptions: {
@@ -521,7 +520,9 @@
 								   		if (event.point.isNode){
 								   			window.open(window.location.origin+"localhost:9090/node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
 								   		}else{
-								   			window.open(window.location.origin+"/link-customizations/"+event.point.sankeyLinkType.toLowerCase()+"?from="+event.point.from+"&to="+event.point.to);
+								   			if(["PACKAGEPRODUCT","ASSETPRODUCT","PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE","PRODUCTFEATURESIBLING"].includes(event.point.sankeyLinkType)) {
+												window.open(window.location.origin + "/link-customizations/" + event.point.sankeyLinkType.toLowerCase() + "?from=" + event.point.from + "&to=" + event.point.to);
+											}
 								   		}
 						   		}
 			            }

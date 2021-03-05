@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.onekin.customdiff.model.Feature;
-
+import org.springframework.data.repository.query.Param;
 
 
 @Transactional
@@ -24,4 +24,6 @@ public interface FeatureRepository extends CrudRepository<Feature, Long> {
 	List<String> getCustomizedFeatures();
 
 
+	@Query("Select c.idparent from Feature c where c.idfeature=:featureId")
+    String getFeatureParentId(@Param("featureId") String featureId);
 }

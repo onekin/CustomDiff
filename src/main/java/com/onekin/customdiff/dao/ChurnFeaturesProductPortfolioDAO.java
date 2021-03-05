@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class ChurnFeaturesProductPortfolioDAO {
 
-    private final String CHURN_FEATURE_SIBLING_PER_PRODUCT = "SELECT fb.id_feature_group, pr.idproductrelease, pr.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
+    private final String CHURN_FEATURE_SIBLING_PER_PRODUCT = "SELECT DISTINCT(fb.id_feature_group), pr.idproductrelease, pr.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
             "FROM product_release pr inner join customization_fact cf on pr.idproductrelease=cf.idproductrelease " +
             "inner join variation_point vp on cf.idvariationpoint=vp.idvariationpoint " +
             "inner join feature_bridge fb on fb.id_feature_group=vp.id_feature_group " +

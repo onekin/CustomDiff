@@ -44,7 +44,7 @@ public class SankeyService {
 		while (it.hasNext()) {
 			churnProdFeature = it.next();
 			if (!churnProdFeature.getIdFeature().equals("No Feature")) {
-				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getId_pr(),
+				sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getProductId(),
 						churnProdFeature.getIdFeature(), churnProdFeature.getChurn(), SankeyLinkType.PRODUCTFEATURE);
 				sankeyData.add(sankeyLink);
 				nodes.add(new SankeyNode(churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
@@ -94,7 +94,7 @@ public class SankeyService {
 
 	private void setAggregatedProductAndFeatureChurn(List<SankeyLink> sankeyData, Set<SankeyNode> nodes) {
 		Integer agregatedChurn = productAndFeaturesRepo.getAgregatedChurn();
-		SankeyLink sankeyLink = new SankeyLink("ALL-PR", "ALL-F", agregatedChurn, SankeyLinkType.PRODUCTFEATURE);
+		SankeyLink sankeyLink = new SankeyLink("ALL-PR", "ALL-F", agregatedChurn, SankeyLinkType.PRODUCTPARENTFEATURE);
 		sankeyData.add(sankeyLink);
 		nodes.add(new SankeyNode("ALL-PR", "ALL PRODUCTS", true, false, SankeyNodeType.PRODUCT));
 		nodes.add(new SankeyNode("ALL-F", "ALL FEATURES", true, false, SankeyNodeType.PARENTFEATURE));

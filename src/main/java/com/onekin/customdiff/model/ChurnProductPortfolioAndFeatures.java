@@ -72,7 +72,7 @@ public class ChurnProductPortfolioAndFeatures {
 		this.featuremodified = featuremodified;
 	}
 
-	public int getId_pr() {
+	public int getProductId() {
 		return id_pr;
 	}
 
@@ -80,7 +80,7 @@ public class ChurnProductPortfolioAndFeatures {
 		this.id_pr = id_pr;
 	}
 
-	public String getPr_name() {
+	public String getProductName() {
 		return pr_name;
 	}
 

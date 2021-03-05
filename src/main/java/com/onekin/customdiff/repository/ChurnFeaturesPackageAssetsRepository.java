@@ -36,7 +36,5 @@ public interface ChurnFeaturesPackageAssetsRepository extends CrudRepository<Chu
 	List<ChurnFeaturesPackageAssets> findByParentFeatureIdCoreAssetIdInAndGroupByFeatures(
 			@Param("assetIds") Set<Integer> assetIds, @Param("parentFeatureId") int parentFeatureId);
 
-	
-
 
 }

@@ -39,6 +39,7 @@ public class LinkCustomizationDiffService {
 
 	public List<CustomsByFeatureAndCoreAsset> getFeatureAndAssetCustomizations(String featureId, String assetId) {
 		int assetIdCleaned = Integer.valueOf(assetId.split("-")[1].replace("'", ""));
+		featureId = featureId.split("-")[1];
 		return customsByFeatureAndCoreAssetRepo.findByIdcoreassetAndIdfeature(assetIdCleaned, featureId);
 	}
 

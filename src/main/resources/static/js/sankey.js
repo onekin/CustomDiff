@@ -1351,7 +1351,7 @@
                 setState: H.NodesMixin.setNodeState,
                 getClassName: function () {
                     return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
-                    Point.prototype.getClassName.call(this);
+                    Point.prototype.getClassName.call(this) + (!(["PACKAGEPRODUCT","ASSETPRODUCT","PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE","PRODUCTFEATURESIBLING"].includes(this.sankeyLinkType))? ' link-not-allowed':'');
                 },
                 isValid: function () {
                     return this.isNode || typeof this.weight === 'number';

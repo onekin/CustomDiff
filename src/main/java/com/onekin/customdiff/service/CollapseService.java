@@ -104,13 +104,13 @@ public class CollapseService {
 					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.PARENTFEATURE).map(SankeyNode::getId)
 					.collect(Collectors.toSet());
 			Set<String> featureIds = nodes.stream().filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURE)
-					.map(SankeyNode::getId).collect(Collectors.toSet());
+					.map(x->x.getId().split("-")[1]).collect(Collectors.toSet());
 
 			if (!featureIds.isEmpty()) {
 				List<ChurnFeaturesAndPackagesGrouped> churnFeaturesPackagesList = featuresAndPackagesRepo
 						.findByIdPackageAndFeaturesInGroupByFeatures(Integer.valueOf(packageId), featureIds);
 				for (ChurnFeaturesAndPackagesGrouped churnFeaturesAndPackage : churnFeaturesPackagesList) {
-					sankeyLink = new SankeyLink(churnFeaturesAndPackage.getIdfeature(),
+					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnFeaturesAndPackage.getIdfeature(),
 							PrefixConstants.PACKAGE_PREFIX + churnFeaturesAndPackage.getIdpackage(),
 							churnFeaturesAndPackage.getChurn(), SankeyLinkType.FEATUREPACKAGE);
 					sankeyLinks.add(sankeyLink);

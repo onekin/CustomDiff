@@ -2,6 +2,7 @@ package com.onekin.customdiff.service;
 
 import java.util.List;
 
+import com.onekin.customdiff.utils.PrefixConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,4 +40,8 @@ public class EntityService {
 		// TODO Auto-generated method stub
 		return featureRepository.getCustomizedFeatures();
 	}
+
+    public String getFeatureParentId(String featureId) {
+		return PrefixConstants.PARENTFEATURE_PREFIX+featureRepository.getFeatureParentId(featureId);
+    }
 }

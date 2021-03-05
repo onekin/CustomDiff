@@ -153,7 +153,8 @@ public class CollapseController {
 				.removeIf(x -> x.getSankeyLinkType() == SankeyLinkType.FEATUREASSET
 						|| x.getSankeyLinkType() == SankeyLinkType.FEATUREPACKAGE
 						|| x.getSankeyLinkType() == SankeyLinkType.PARENTFEATUREASSET
-						|| x.getSankeyLinkType() == SankeyLinkType.PARENTFEATUREPACKAGE);
+						|| x.getSankeyLinkType() == SankeyLinkType.PARENTFEATUREPACKAGE
+						|| x.getSankeyLinkType() == SankeyLinkType.FEATURESIBLINGPACKAGE);
 		return sankeyResponse;
 	}
 }

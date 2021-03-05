@@ -117,3 +117,7 @@ ul#analysisConfigDropdown {
 .right {
     padding-left: 2%;
 }
+
+.link-not-allowed{
+	cursor:not-allowed;
+}

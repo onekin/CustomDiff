@@ -79,8 +79,8 @@ public class ExpandController {
 	@ResponseBody
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, path = "/expand/right-package/{expandId}")
-	public SankeyResponse expanRighttPackage(@PathVariable(name = "expandId") String expandId,
-			@RequestBody SankeyResponse sankeyResponse) {
+	public SankeyResponse expanRightPackage(@PathVariable(name = "expandId") String expandId,
+											@RequestBody SankeyResponse sankeyResponse) {
 		sankeyResponse.deleteNodesAndLinksById(expandId);
 
 		String packageId = expandId.split("-")[1];
