@@ -27,22 +27,22 @@ The easiest way of running CustomDIFF with the replication data is using Docker:
 In this way the web application will be launched in localhost (by default the app will be running on port 9090)
 and the customization data available for visualization will be that of the WeatherStationSPL.
 
-### Mannualy
+### Manually
 #### Importing into IDE
 CustomDIFF visualization module is a Maven project. You can import it into your favorite IDE as you do with any other Maven project.\
-Here you can find some guides on how to import a Maven project into the two most populer Java IDEs:
+Here you can find some guides on how to import a Maven project into the two most popular Java IDEs:
 * [Eclipse](https://www.vogella.com/tutorials/EclipseMaven/article.html)
 * [IntelliJ IDEA](https://www.jetbrains.com/help/idea/maven-support.html#maven_import_project_start)
 #### Setting up the DataBase
 1. Download MySQL database
-2. Create the DB schema used in CustomDIFF, to this end use the schema creation script availabe at [the inserts folder](src/main/resources/META-INF/SQL-statements/create-db.sql)
+2. Create the DB schema used in CustomDIFF, to this end use the schema creation script available at [the inserts folder](src/main/resources/META-INF/SQL-statements/create-db.sql)
 3. After creating the schema you have two options, import the data about the customizations of the [WeatherStationSPL](src/main/resources/META-INF/SQL-statements/inserts-statements.sql)
 or generate your own data using [Git2SPLDB mining module](https://github.com/onekin/git2spldb)
 
 #### Running
 If you want to build and run CustomDIFF on your own, you have to follow these steps:
 
-1. Set up your database connection and your http port in the [application.properties](src/main/resources/application.properties) file. 
+1. Set up your database connection and, your HTTP port in the [application.properties](src/main/resources/application.properties) file. 
 2. Package the jar using Maven:
 
      ``` $ mvn package  ```
@@ -55,4 +55,4 @@ If you want to build and run CustomDIFF on your own, you have to follow these st
 T.B.D
      
 ## Contact
-If you have any troubles setting up CustomDIFF create an issue or contact raul.medeiros[at]ehu.eus     
+If you have any troubles setting up CustomDIFF [create an issue](https://github.com/onekin/customdiff/issues/new) or contact raul.medeiros[at]ehu.eus     

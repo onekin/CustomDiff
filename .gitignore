@@ -31,3 +31,5 @@ exportCSV.csv
 temp.txt.liddell.nexus
 temp.txt.oddsratio.nexus
 python
+
+.DS_Store
