@@ -11,7 +11,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "9091:9090" # Forward the exposed port 9091 on the container to port 9091 on the host machine
+      - "9090:9090" # Forward the exposed port 9091 on the container to port 9091 on the host machine
     restart: always
     depends_on:
       - db # This service depends on mysql. Start that first.
