@@ -520,7 +520,7 @@
 								   		if (event.point.isNode){
 								   			window.open(window.location.origin+"localhost:9090/node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
 								   		}else{
-								   			if(["PACKAGEPRODUCT","ASSETPRODUCT","PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE","PRODUCTFEATURESIBLING"].includes(event.point.sankeyLinkType)) {
+								   			if(["PACKAGEPRODUCT","ASSETPRODUCT","PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE","PRODUCTFEATURESIBLING","FEATURESIBLINGPACKAGE","FEATURESIBLINGCOREASSET"].includes(event.point.sankeyLinkType)) {
 												window.open(window.location.origin + "/link-customizations/" + event.point.sankeyLinkType.toLowerCase() + "?from=" + event.point.from + "&to=" + event.point.to);
 											}
 								   		}

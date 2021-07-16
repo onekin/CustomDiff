@@ -1,7 +1,9 @@
 package com.onekin.customdiff.dao;
 
+import com.onekin.customdiff.dao.extractor.ChurnFeatureSiblingsAndAssetsExtractor;
 import com.onekin.customdiff.dao.extractor.ChurnFeatureSiblingsAndPackagesExtractor;
 import com.onekin.customdiff.dao.extractor.ChurnProductsAndFeatureSiblingsExtractor;
+import com.onekin.customdiff.model.ChurnFeatureSiblingsAndAssets;
 import com.onekin.customdiff.model.ChurnFeatureSiblingsAndPackages;
 import com.onekin.customdiff.model.ChurnProductsAndFeatureSiblings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,14 @@ public class ChurnFeatureSiblingsCoreAssetsDAO {
             "where  fb.id_feature_group in (:featureSiblingIds) " +
             "group by fb.id_feature_group, ca.idpackage;";
 
+    private final String CHURN_FEATURE_SIBLING_ASSETS= "SELECT fb.id_feature_group, ca.idcoreasset, ca.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
+            "FROM  customization_fact cf " +
+            "inner join variation_point vp on cf.idvariationpoint=vp.idvariationpoint " +
+            "inner join core_asset ca on ca.idcoreasset=vp.idcoreasset "+
+            "inner join feature_bridge fb on fb.id_feature_group=vp.id_feature_group " +
+            "where fb.id_feature=:idFeature  and ca.idcoreasset in (:assetsIds) " +
+            "group by fb.id_feature_group, ca.idcoreasset;";
+
     @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -46,10 +56,17 @@ public class ChurnFeatureSiblingsCoreAssetsDAO {
 
     }
 
-    public List<ChurnFeatureSiblingsAndPackages> getChurnFeatureSiblingsCoreAssets(Set<Integer> featureSiblingIds) {
+    public List<ChurnFeatureSiblingsAndPackages> getChurnFeatureSiblingsPackages(Set<Integer> featureSiblingIds) {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("featureSiblingIds", featureSiblingIds);
         return namedJdbcTemplate.query(CHURN_FEATURE_SIBLING, parameters, new ChurnFeatureSiblingsAndPackagesExtractor());
 
+    }
+
+    public List<ChurnFeatureSiblingsAndAssets> getChurnFeatureSiblingsCoreAssetsInAssets(String idFeature, Set<Integer> cleanListOfIds) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("idFeature", idFeature);
+        parameters.addValue("assetsIds", cleanListOfIds);
+        return namedJdbcTemplate.query(CHURN_FEATURE_SIBLING_ASSETS, parameters, new ChurnFeatureSiblingsAndAssetsExtractor());
     }
 }

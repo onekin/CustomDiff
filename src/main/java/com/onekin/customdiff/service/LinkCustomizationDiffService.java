@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.onekin.customdiff.dao.ChurnFeatureSiblingsProductsDAO;
+import com.onekin.customdiff.model.ChurnFeatureSiblingsAndPackages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,9 @@ public class LinkCustomizationDiffService {
 
 	@Autowired
 	private CustomsByFeatureAndCoreAssetRepository customsByFeatureAndCoreAssetRepo;
+
+	@Autowired
+	private ChurnFeatureSiblingsProductsDAO featureSiblingsProductsDAO;
 
 	public List<CustomsByFeatureAndCoreAsset> getPackageAndProductsCustomizations(String packageId, String productId) {
 		int productIdCleaned = Integer.valueOf(productId.split("-")[1]);
@@ -61,5 +66,26 @@ public class LinkCustomizationDiffService {
 			}
 		}
 		return tangledFeatures;
+	}
+
+    public List<CustomsByFeatureAndCoreAsset> getProductAndFeatureSibling(String from, String to) {
+		int productIdCleaned = Integer.valueOf(from.split("-")[1]);
+		int featureSiblingIdCleaned = Integer.valueOf(to.split("-")[1].replace("'", ""));
+
+		return featureSiblingsProductsDAO.findByIdproductreleaseAndIdFeatureSibling(featureSiblingIdCleaned, productIdCleaned);
+    }
+
+	public List<CustomsByFeatureAndCoreAsset> getFeatureSiblingAndPackage(String from, String to) {
+		int featureSiblingIdCleaned = Integer.valueOf(from.split("-")[1]);
+		int packageIdCleaned = Integer.valueOf(to.split("-")[1].replace("'", ""));
+
+		return featureSiblingsProductsDAO.findIdFeatureSiblingAndPackage(featureSiblingIdCleaned, packageIdCleaned);
+	}
+
+	public List<CustomsByFeatureAndCoreAsset> getFeatureSiblingAndAssets(String from, String to) {
+		int featureSiblingIdCleaned = Integer.valueOf(from.split("-")[1]);
+		int assetCleaned = Integer.valueOf(to.split("-")[1].replace("'", ""));
+
+		return featureSiblingsProductsDAO.findIdFeatureSiblingAndAsset(featureSiblingIdCleaned, assetCleaned);
 	}
 }

@@ -72,4 +72,37 @@ public class LinkCustomizationDiffController {
 		return "links-diffs";
 	}
 
+	@GetMapping("/productfeaturesibling")
+	public String getProductAndFeatureSibling(@RequestParam("from") String from, @RequestParam("to") String to,
+													 Model model) {
+		List<CustomsByFeatureAndCoreAsset> featureAndPackageCustomizations = linkCustomizationDiffService
+				.getProductAndFeatureSibling(from, to);
+		model.addAttribute("customizations", featureAndPackageCustomizations);
+		model.addAttribute("linkNodes", from + " and "+ featureAndPackageCustomizations.get(0).getIdpackage());
+
+		return "links-diffs";
+	}
+
+
+	@GetMapping("/featuresiblingpackage")
+	public String getFeatureSiblingAndPackage(@RequestParam("from") String from, @RequestParam("to") String to,
+											  Model model) {
+		List<CustomsByFeatureAndCoreAsset> featureAndPackageCustomizations = linkCustomizationDiffService
+				.getFeatureSiblingAndPackage(from, to);
+		model.addAttribute("customizations", featureAndPackageCustomizations);
+		model.addAttribute("linkNodes", from + " and "+ featureAndPackageCustomizations.get(0).getIdpackage());
+
+		return "links-diffs";
+	}
+
+	@GetMapping("/featuresiblingcoreasset")
+	public String getFeatureSiblingAndAssets(@RequestParam("from") String from, @RequestParam("to") String to,
+											  Model model) {
+		List<CustomsByFeatureAndCoreAsset> featureAndPackageCustomizations = linkCustomizationDiffService
+				.getFeatureSiblingAndAssets(from, to);
+		model.addAttribute("customizations", featureAndPackageCustomizations);
+		model.addAttribute("linkNodes", from + " and "+ featureAndPackageCustomizations.get(0).getIdpackage());
+
+		return "links-diffs";
+	}
 }

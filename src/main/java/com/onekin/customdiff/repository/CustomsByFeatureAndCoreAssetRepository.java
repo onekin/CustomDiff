@@ -35,5 +35,4 @@ public interface CustomsByFeatureAndCoreAssetRepository extends CrudRepository<C
 	List<String> findFeatureByCustomId(@Param(value="idCustom")int idCustom);
 
 
-
 }

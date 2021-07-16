@@ -577,7 +577,7 @@ public class ExpandService {
 
 			if (featureSiblingIds.size() > 0) {
 				Set<Integer> featureSiblingIdsClenades = Formatting.cleanListOfIds(featureSiblingIds);
-				Iterable<ChurnFeatureSiblingsAndPackages> churnFeatureSiblingsAndPackages = churnFeatureSiblingsCoreAssetsDAO.getChurnFeatureSiblingsCoreAssets(featureSiblingIdsClenades);
+				Iterable<ChurnFeatureSiblingsAndPackages> churnFeatureSiblingsAndPackages = churnFeatureSiblingsCoreAssetsDAO.getChurnFeatureSiblingsPackages(featureSiblingIdsClenades);
 				for (ChurnFeatureSiblingsAndPackages churnsParentFeaturesAndPackages : churnFeatureSiblingsAndPackages) {
 					sankeyLink = new SankeyLink(
 							PrefixConstants.FEATURE_SIBLING
@@ -659,18 +659,19 @@ public class ExpandService {
 					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.RIGHTPACKAGE).map(SankeyNode::getId)
 					.collect(Collectors.toSet());
 
-			/*if (!assetsIds.isEmpty()) {
-				List<ChurnFeaturesAndPackagesGrouped> featuresAndCoreAssetsList = featu
-						.findByFeatureIdCoreAssetIdInAndGroupByFeatures(Formatting.cleanListOfIds(assetsIds),
-								featureId);
-				for (ChurnFeaturesPackageAssets churnFeaturesAndCoreAssets : featuresAndCoreAssetsList) {
-					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_PREFIX+churnFeaturesAndCoreAssets.getFeatureId(),
-							PrefixConstants.ASSET_PREFIX + churnFeaturesAndCoreAssets.getIdcoreasset(),
-							churnFeaturesAndCoreAssets.getChurn(), SankeyLinkType.FEATUREASSET);
+			if (!assetsIds.isEmpty()) {
+				List<ChurnFeatureSiblingsAndAssets> churnFeatureSiblingsAndAssetsList = churnFeatureSiblingsCoreAssetsDAO.
+						getChurnFeatureSiblingsCoreAssetsInAssets(
+								featureId,Formatting.cleanListOfIds(assetsIds));
+
+				for (ChurnFeatureSiblingsAndAssets churnParentFeatureAndAsset : churnFeatureSiblingsAndAssetsList) {
+					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_SIBLING+churnParentFeatureAndAsset.getIdFeatureSibling(),
+							PrefixConstants.ASSET_PREFIX + churnParentFeatureAndAsset.getAssetId(),
+							churnParentFeatureAndAsset.getChurn(), SankeyLinkType.FEATURESIBLINGCOREASSET);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
 
 				}
-			}*/
+			}
 			if (!packagesIds.isEmpty()) {
 
 				List<ChurnFeatureSiblingsAndPackages> churnFeatureAndPackageList = churnFeatureSiblingsCoreAssetsDAO.
@@ -680,7 +681,7 @@ public class ExpandService {
 				for (ChurnFeatureSiblingsAndPackages churnParentFeatureAndProd : churnFeatureAndPackageList) {
 					sankeyLink = new SankeyLink(PrefixConstants.FEATURE_SIBLING+churnParentFeatureAndProd.getIdFeatureSibling(),
 							PrefixConstants.PACKAGE_PREFIX + churnParentFeatureAndProd.getPackageId(),
-							churnParentFeatureAndProd.getChurn(), SankeyLinkType.FEATUREPACKAGE);
+							churnParentFeatureAndProd.getChurn(), SankeyLinkType.FEATURESIBLINGPACKAGE);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
 
 				}
