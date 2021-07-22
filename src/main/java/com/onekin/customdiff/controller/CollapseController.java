@@ -116,7 +116,7 @@ public class CollapseController {
         sankeyResponse.getNodes().removeIf(x -> x.getSankeyNodeType() == SankeyNodeType.LEFTPACKAGE
                 || x.getSankeyNodeType() == SankeyNodeType.LEFTASSET);
         sankeyResponse.getSankeyLinks().removeIf(x -> x.getSankeyLinkType() == SankeyLinkType.ASSETPRODUCT
-                || x.getSankeyLinkType() == SankeyLinkType.PACKAGEPRODUCT);
+                || x.getSankeyLinkType() == SankeyLinkType.PACKAGEPRODUCT ||x.getSankeyLinkType() == SankeyLinkType.PACKAGEPRODUCTALL || x.getSankeyLinkType() == SankeyLinkType.ASSETALLPRODUCT );
         return sankeyResponse;
     }
 
@@ -131,7 +131,8 @@ public class CollapseController {
                         || x.getSankeyLinkType() == SankeyLinkType.FEATUREPACKAGE
                         || x.getSankeyLinkType() == SankeyLinkType.PARENTFEATUREASSET
                         || x.getSankeyLinkType() == SankeyLinkType.PARENTFEATUREPACKAGE
-                        || x.getSankeyLinkType() == SankeyLinkType.FEATURESIBLINGPACKAGE);
+                        || x.getSankeyLinkType() == SankeyLinkType.FEATURESIBLINGPACKAGE
+                        || x.getSankeyLinkType() == SankeyLinkType.FEATURESIBLINGCOREASSET);
         return sankeyResponse;
     }
 

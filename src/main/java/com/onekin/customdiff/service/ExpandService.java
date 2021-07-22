@@ -144,6 +144,27 @@ public class ExpandService {
 					nodes.add(node);
 				}
 			}
+
+			Set<String> featureSiblingIds = nodes.stream().filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURESIBLING)
+					.map(x-> x.getId().split("-")[1]).collect(Collectors.toSet());
+			if (!featureSiblingIds.isEmpty()) {
+
+				for(String featureSiblingId:featureSiblingIds){
+					List<ChurnFeatureSiblingsAndAssets> featuresSiblingAndAssetsList = churnFeatureSiblingsCoreAssetsDAO.getByPackageIdAndFeatureSiblingId(featureSiblingId,packageId);
+
+					for(ChurnFeatureSiblingsAndAssets churnFeatureSiblingsAndAssets:featuresSiblingAndAssetsList) {
+						sankeyLink = new SankeyLink(PrefixConstants.FEATURE_SIBLING + churnFeatureSiblingsAndAssets.getIdFeatureSibling(),
+								PrefixConstants.ASSET_PREFIX + churnFeatureSiblingsAndAssets.getAssetId(),
+								churnFeatureSiblingsAndAssets.getChurn(), SankeyLinkType.FEATURESIBLINGCOREASSET);
+						sankeyLinks.add(sankeyLink);
+						node = new SankeyNode(PrefixConstants.ASSET_PREFIX + churnFeatureSiblingsAndAssets.getAssetId(),
+								churnFeatureSiblingsAndAssets.getAssetName(), false, true, SankeyNodeType.RIGHTASSET);
+						node.setParentId(PrefixConstants.PACKAGE_PREFIX + packageId);
+						nodes.add(node);
+					}
+				}
+
+			}
 		}
 	}
 

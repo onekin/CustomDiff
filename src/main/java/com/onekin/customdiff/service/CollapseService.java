@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.onekin.customdiff.dao.ChurnFeatureSiblingsCoreAssetsDAO;
 import com.onekin.customdiff.model.*;
 import com.onekin.customdiff.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class CollapseService {
 
     @Autowired
     private ChurnProductPortfolioAndFeaturesRepository productAndFeaturesRepo;
+
+    @Autowired
+    private ChurnFeatureSiblingsCoreAssetsDAO churnFeatureSiblingsCoreAssetsDAO;
 
     public void collapseLeftFilesIntoPackage(Set<SankeyNode> nodes, List<SankeyLink> sankeyLinks, String packageId) {
         List<ChurnPackageAndProduct> churnPackageAndProductList = assetsAndProductRepo
@@ -139,6 +143,26 @@ public class CollapseService {
                             SankeyNodeType.RIGHTPACKAGE);
                     nodes.add(node);
                 }
+            }
+
+            Set<String> featureSiblingIds = nodes.stream().filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURESIBLING)
+                    .map(x-> x.getId().split("-")[1]).collect(Collectors.toSet());
+            if (!featureSiblingIds.isEmpty()) {
+
+                for(String featureSiblingId:featureSiblingIds){
+                    List<ChurnFeatureSiblingsAndPackages> featuresSiblingAndAssetsList = churnFeatureSiblingsCoreAssetsDAO.getPackageChurnsByPackageIdAndFeatureSiblingId(featureSiblingId,packageId);
+
+                    for(ChurnFeatureSiblingsAndPackages churnFeatureSiblingsAndAssets:featuresSiblingAndAssetsList) {
+                        sankeyLink = new SankeyLink(PrefixConstants.FEATURE_SIBLING + churnFeatureSiblingsAndAssets.getIdFeatureSibling(),
+                                PrefixConstants.PACKAGE_PREFIX + churnFeatureSiblingsAndAssets.getPackageId(),
+                                churnFeatureSiblingsAndAssets.getChurn(), SankeyLinkType.FEATURESIBLINGPACKAGE);
+                        sankeyLinks.add(sankeyLink);
+                        node = new SankeyNode(PrefixConstants.PACKAGE_PREFIX + churnFeatureSiblingsAndAssets.getPackageId(),
+                                churnFeatureSiblingsAndAssets.getPackageName(), true, false, SankeyNodeType.RIGHTPACKAGE);
+                        nodes.add(node);
+                    }
+                }
+
             }
         }
 
