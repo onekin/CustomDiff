@@ -3,6 +3,7 @@ package com.onekin.customdiff.repository;
 import java.util.List;
 import java.util.Set;
 
+import com.onekin.customdiff.model.ChurnProductPortfolioAndFeatures;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,5 @@ public interface ChurnParentFeaturesProductPortfolioRepository
 
 	@Query("Select c from ChurnParentFeaturesProductPortfolio c where c.idParentFeature=:parentFeatureId group by c.idParentFeature, c.productId")
 	List<ChurnParentFeaturesProductPortfolio> findByParentFeatureId(@Param("parentFeatureId")int parentFeatureId);
+
 }

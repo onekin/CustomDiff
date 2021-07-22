@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ChurnFeaturesProductPortfolioDAO {
@@ -18,6 +20,14 @@ public class ChurnFeaturesProductPortfolioDAO {
             "inner join variation_point vp on cf.idvariationpoint=vp.idvariationpoint " +
             "inner join feature_bridge fb on fb.id_feature_group=vp.id_feature_group " +
             "where fb.id_feature=:idFeature " +
+            "group by fb.id_feature_group, pr.idproductrelease;";
+
+
+    private final String CHURN_FEATURE_SIBLING_PER_PRODUCT_BY_FSID = "SELECT DISTINCT(fb.id_feature_group), pr.idproductrelease, pr.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
+            "FROM product_release pr inner join customization_fact cf on pr.idproductrelease=cf.idproductrelease " +
+            "inner join variation_point vp on cf.idvariationpoint=vp.idvariationpoint " +
+            "inner join feature_bridge fb on fb.id_feature_group=vp.id_feature_group " +
+            "where fb.id_feature_group=:featureSiblingId " +
             "group by fb.id_feature_group, pr.idproductrelease;";
 
     private final String FEATURE_SIBLINGS_EXPRESSION = "SELECT id_feature " +
@@ -44,5 +54,17 @@ public class ChurnFeaturesProductPortfolioDAO {
             churnProductsAndFeatureSiblings.setExpression(expression);
         }
 
+    }
+
+    public List<ChurnProductsAndFeatureSiblings> findByFeatureSiblingIdIn(Set<String> featureSiblingIds) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("featureSiblingIds", featureSiblingIds);
+        return namedJdbcTemplate.query(CHURN_FEATURE_SIBLING_PER_PRODUCT, parameters, new ChurnProductsAndFeatureSiblingsExtractor());
+    }
+
+    public List<ChurnProductsAndFeatureSiblings> findByFeatureSiblingId(String featureSiblingId) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("featureSiblingId", featureSiblingId);
+        return namedJdbcTemplate.query(CHURN_FEATURE_SIBLING_PER_PRODUCT_BY_FSID, parameters, new ChurnProductsAndFeatureSiblingsExtractor());
     }
 }

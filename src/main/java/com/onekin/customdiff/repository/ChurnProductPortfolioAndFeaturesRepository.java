@@ -23,6 +23,7 @@ public interface ChurnProductPortfolioAndFeaturesRepository
 	@Query("Select new ChurnProductPortfolioAndFeatures( c.id_pr, c.pr_name, SUM(c.churn)) from ChurnProductPortfolioAndFeatures c where c.idFeature!='No Feature' group by c.id_pr")
 	List<ChurnProductPortfolioAndFeatures> findAllAggregatedInFeature();
 
-	List<ChurnProductPortfolioAndFeatures> findByParentFeatureId(int parentId); 
+	List<ChurnProductPortfolioAndFeatures> findByParentFeatureId(int parentId);
 
+	List<ChurnProductPortfolioAndFeatures> findByIdFeature(String cleanFeatureId);
 }
