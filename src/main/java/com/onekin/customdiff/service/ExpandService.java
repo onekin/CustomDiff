@@ -144,6 +144,27 @@ public class ExpandService {
 					nodes.add(node);
 				}
 			}
+
+			Set<String> featureSiblingIds = nodes.stream().filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURESIBLING)
+					.map(x-> x.getId().split("-")[1]).collect(Collectors.toSet());
+			if (!featureSiblingIds.isEmpty()) {
+
+				for(String featureSiblingId:featureSiblingIds){
+					List<ChurnFeatureSiblingsAndAssets> featuresSiblingAndAssetsList = churnFeatureSiblingsCoreAssetsDAO.getByPackageIdAndFeatureSiblingId(featureSiblingId,packageId);
+
+					for(ChurnFeatureSiblingsAndAssets churnFeatureSiblingsAndAssets:featuresSiblingAndAssetsList) {
+						sankeyLink = new SankeyLink(PrefixConstants.FEATURE_SIBLING + churnFeatureSiblingsAndAssets.getIdFeatureSibling(),
+								PrefixConstants.ASSET_PREFIX + churnFeatureSiblingsAndAssets.getAssetId(),
+								churnFeatureSiblingsAndAssets.getChurn(), SankeyLinkType.FEATURESIBLINGCOREASSET);
+						sankeyLinks.add(sankeyLink);
+						node = new SankeyNode(PrefixConstants.ASSET_PREFIX + churnFeatureSiblingsAndAssets.getAssetId(),
+								churnFeatureSiblingsAndAssets.getAssetName(), false, true, SankeyNodeType.RIGHTASSET);
+						node.setParentId(PrefixConstants.PACKAGE_PREFIX + packageId);
+						nodes.add(node);
+					}
+				}
+
+			}
 		}
 	}
 
@@ -265,7 +286,11 @@ public class ExpandService {
 					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.PARENTFEATURE).map(SankeyNode::getId)
 					.collect(Collectors.toSet());
 			Set<String> featureIds = sankeyResponse.getNodes().stream()
-					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURE).map(x->x.getId().split("-")[1])
+					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURE).map(x -> x.getId().split("-")[1])
+					.collect(Collectors.toSet());
+
+			Set<String> featureSiblingIds = sankeyResponse.getNodes().stream()
+					.filter(x -> x.getSankeyNodeType() == SankeyNodeType.FEATURESIBLING).map(x -> x.getId().split("-")[1])
 					.collect(Collectors.toSet());
 			if (!parentFeaturesIds.isEmpty()) {
 
@@ -303,15 +328,15 @@ public class ExpandService {
 				while (it.hasNext()) {
 					churnProdFeature = it.next();
 					sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getProductId(),
-							PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
+							PrefixConstants.FEATURE_PREFIX + churnProdFeature.getIdFeature(), churnProdFeature.getChurn(),
 							SankeyLinkType.PRODUCTFEATURE);
 					sankeyResponse.getSankeyLinks().add(sankeyLink);
-					node = new SankeyNode(PrefixConstants.FEATURE_PREFIX+churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
+					node = new SankeyNode(PrefixConstants.FEATURE_PREFIX + churnProdFeature.getIdFeature(), churnProdFeature.getFeaturemodified(), false,
 							false, SankeyNodeType.FEATURE);
 					node.setParentId(PrefixConstants.PARENTFEATURE_PREFIX + churnProdFeature.getParentFeatureId());
 					sankeyResponse.getNodes().add(node);
-					if(!(sankeyResponse.getNodes().stream().anyMatch(x -> x.getSankeyNodeType() == SankeyNodeType.LEFTASSET
-							|| x.getSankeyNodeType() == SankeyNodeType.LEFTPACKAGE ))){
+					if (!(sankeyResponse.getNodes().stream().anyMatch(x -> x.getSankeyNodeType() == SankeyNodeType.LEFTASSET
+							|| x.getSankeyNodeType() == SankeyNodeType.LEFTPACKAGE))) {
 						sankeyResponse.getNodes()
 								.add(new SankeyNode(
 										PrefixConstants.PRODUCT_PREFIX + churnProdFeature.getProductId(),
@@ -320,8 +345,33 @@ public class ExpandService {
 					}
 				}
 			}
-		}
 
+			if (!featureSiblingIds.isEmpty()) {
+				SankeyNode node;
+				for (String featureSiblingId : featureSiblingIds) {
+					List<ChurnProductsAndFeatureSiblings> churnProdFeatureSiblingList = productAndFeatureSiblingDao.findByFeatureSiblingId(featureSiblingId);
+
+					for (ChurnProductsAndFeatureSiblings churnProdFeatureSibling : churnProdFeatureSiblingList) {
+						sankeyLink = new SankeyLink(PrefixConstants.PRODUCT_PREFIX + churnProdFeatureSibling.getIdProduct(),
+								PrefixConstants.FEATURE_SIBLING + churnProdFeatureSibling.getIdFeatureSibling(), churnProdFeatureSibling.getChurn(),
+								SankeyLinkType.PRODUCTFEATURESIBLING);
+						sankeyResponse.getSankeyLinks().add(sankeyLink);
+						node = new SankeyNode(PrefixConstants.FEATURE_SIBLING + churnProdFeatureSibling.getIdFeatureSibling(), churnProdFeatureSibling.getExpression(), false,
+								true, SankeyNodeType.FEATURE);
+						node.setParentId(PrefixConstants.FEATURE_PREFIX + sankeyResponse.getNodes().stream().filter(x-> x.getId().equals("fs-"+featureSiblingId)).findFirst().get().getParentId());
+						sankeyResponse.getNodes().add(node);
+						if (!(sankeyResponse.getNodes().stream().anyMatch(x -> x.getSankeyNodeType() == SankeyNodeType.LEFTASSET
+								|| x.getSankeyNodeType() == SankeyNodeType.LEFTPACKAGE))) {
+							sankeyResponse.getNodes()
+									.add(new SankeyNode(
+											PrefixConstants.PRODUCT_PREFIX + churnProdFeatureSibling.getIdProduct(),
+											churnProdFeatureSibling.getProductName(), false, false,
+											SankeyNodeType.PRODUCT));
+						}
+					}
+				}
+			}
+		}
 		return sankeyResponse;
 
 	}

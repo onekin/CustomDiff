@@ -30,11 +30,15 @@ public interface ChurnFeaturesPackageAssetsRepository extends CrudRepository<Chu
 	List<ChurnFeaturesPackageAssets> findByPackageIdAndFeaturesInGroupedByFeaturesAndAsset(
 			@Param("idPackage") int idPackage, @Param("featureIds") Set<String> featureIds);
 
-	
+
+
+
 	@Query(value = "SELECT new ChurnFeaturesPackageAssets(c.id, c.featureId, c.featurename, c.idcoreasset, "
 			+ "c.caname, c.capath, c.packageId, SUM(c.churn)) FROM ChurnFeaturesPackageAssets c where c.idparentfeature=:parentFeatureId AND c.idcoreasset in (:assetIds) GROUP BY c.featureId ,c.idcoreasset")
 	List<ChurnFeaturesPackageAssets> findByParentFeatureIdCoreAssetIdInAndGroupByFeatures(
 			@Param("assetIds") Set<Integer> assetIds, @Param("parentFeatureId") int parentFeatureId);
 
-
+	@Query(value = "SELECT new ChurnFeaturesPackageAssets(c.id, c.featureId, c.featurename, c.idcoreasset, "
+			+ "c.caname, c.capath, c.packageId, SUM(c.churn)) FROM ChurnFeaturesPackageAssets c where c.featureId=:featureId AND c.idcoreasset in (:assetIds) GROUP BY c.featureId ,c.idcoreasset")
+	List<ChurnFeaturesPackageAssets> findByAssetsIdInAndFeaturesGroupedByFeaturesAndAsset(@Param("assetIds") Set<Integer> assetIds, @Param("featureId") String featureId);
 }
