@@ -510,7 +510,11 @@
 					 events: {
 			                click: function (event) {
 								   		if (event.point.isNode){
-								   			window.open(window.location.origin+"localhost:9090/node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
+								   			pointId=event.point.id
+								   			if(event.point.sankeyNodeType.toLowerCase()==="feature"||event.point.sankeyNodeType.toLowerCase()==="parentfeature"||event.point.sankeyNodeType.toLowerCase()==="featuresibling"){
+								   				pointId = event.point.id.split("-")[1]
+											}
+								   			window.open(window.location.origin+"/node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+pointId);
 								   		}else{
 								   			if(["PACKAGEPRODUCT","ASSETPRODUCT","PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE","PRODUCTFEATURESIBLING","FEATURESIBLINGPACKAGE","FEATURESIBLINGCOREASSET"].includes(event.point.sankeyLinkType)) {
 												window.open(window.location.origin + "/link-customizations/" + event.point.sankeyLinkType.toLowerCase() + "?from=" + event.point.from + "&to=" + event.point.to);
