@@ -4,7 +4,7 @@ CustomDIFF uses pure::variants and Git as the  variability manager and code repo
 The application is implemented in two different modules: (1) the visualization module, available in this repository and 
 (2) the data mining module, available at https://github.com/onekin/git2spldb
 
-There is a video demo available at: https://vimeo.com/577936099\
+There is a video demo available at: https://vimeo.com/577936099 \
 Online demo available at: http://customdiff.onekin.org
 
 ## Acknowledgements
