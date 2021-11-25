@@ -59,6 +59,7 @@ If you want to build and run CustomDIFF on your own, you have to follow these st
 ###TODOS
 * Currently, only feature and product "node" customization effort visualizations are implemented. Contributors are welcome to implement other node visualizations (e.g. parent features or feature siblings).
 * ALL PRODUCTS and ALL FEATURES labels should not be clickable, currently this is performed programatically, but it also should be performed in the interface. Contributors are welcome to implement a style change on these two labels.
+* After resizing the browser window reinitialize all event handlers. Now some are lost and you have to reload the page in order to enable them. 
 * Contributors are also welcome to add this TODOs as issues inside the github repository.
      
 ## Contact

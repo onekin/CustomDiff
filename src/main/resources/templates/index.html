@@ -652,109 +652,113 @@
                 }
             }
         },
-		chart: {
-		        type: 'sankey',
-		        spacingBottom: 15,
-		        spacingTop: 30,
-		        
-		},
-		 plotOptions: {
-				series:{
-			        borderWidth: 0,
+        chart: {
+            type: 'sankey',
+            spacingBottom: 15,
+            spacingTop: 30,
 
-					 events: {
-			                click: function (event) {
-								   		if (event.point.isNode){
-								   			window.open(window.location.origin+"/node-customizations/"+event.point.sankeyNodeType.toLowerCase()+"/"+event.point.id);
-								   		}else{
-								   			if(["PACKAGEPRODUCT","ASSETPRODUCT","PRODUCTFEATURE","FEATUREASSET","FEATUREPACKAGE","PRODUCTFEATURESIBLING","FEATURESIBLINGPACKAGE","FEATURESIBLINGCOREASSET"].includes(event.point.sankeyLinkType)) {
-												window.open(window.location.origin + "/link-customizations/" + event.point.sankeyLinkType.toLowerCase() + "?from=" + event.point.from + "&to=" + event.point.to);
-											}
-								   		}
-						   		}
-			            }
-				},
-		        sankey: {
-		        	nodePadding: 25,
-		        	dataLabels: {
-		                style: {
-		                  color: 'black',
-				 
-		                  
-		                },
-	                	   useHTML: true,
-	                       enabled: true,
-	                       nodeFormatter: function () {
-	                       		   if(this.point.expandable==true && this.point.collapsable==true){
-	                       			return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>'+
-	                       			'<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
-                    			   }else if(this.point.expandable==true){
-	                               		return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="'+this.point.id+'" data-type="'+this.point.sankeyNodeType+'"></i>';
-	                    	   	   }else if(this.point.collapsable==true){
-	                    	   			return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="'+this.point.parentId+'" data-type="'+this.point.sankeyNodeType+'"></i>';
-	                    	   	   }else{
-	                    	   			return this.point.name
-	                    	   	   }
-	                         
-	                       }
-		        	}
-		        }
-		    },
-			series : [ {
-				keys : [ 'from', 'to', 'weight' ],
-				cursor: "pointer",
-				data : linksData,
-				type : 'sankey',
-				name : 'Customization effort',
-		        nodes: nodes,
-		        borderWidth:0
-			} ],
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
 
-			title : {
-				text : ''  
-			},
+                events: {
+                    click: function (event) {
+                        if (event.point.isNode) {
+                            if (event.point.isNode && !Array.from(["ALL PRODUCTS", "ALL FEATURES"]).includes(event.point.name)) {
+                                if (event.point.sankeyNodeType.toLowerCase() === "feature" || event.point.sankeyNodeType.toLowerCase() === "product") {
+                                    window.open(window.location.origin + "/node-customizations/" + event.point.sankeyNodeType.toLowerCase() + "/" + event.point.id);
+                                }
+                            }
+                        } else {
+                            if (["PACKAGEPRODUCT", "ASSETPRODUCT", "PRODUCTFEATURE", "FEATUREASSET", "FEATUREPACKAGE", "PRODUCTFEATURESIBLING", "FEATURESIBLINGPACKAGE", "FEATURESIBLINGCOREASSET"].includes(event.point.sankeyLinkType)) {
+                                window.open(window.location.origin + "/link-customizations/" + event.point.sankeyLinkType.toLowerCase() + "?from=" + event.point.from + "&to=" + event.point.to);
+                            }
+                        }
+                    }
+                }
+            },
+            sankey: {
+                nodePadding: 25,
+                dataLabels: {
+                    style: {
+                        color: 'black',
 
-		    exporting: {
-		        menuItemDefinitions: {
-		            hallmark: {
-		                onclick: function () {
-		                	$("#hallmarkModal").modal("show");
 
-		                },
-		                text: 'Analysis Hallmark'
-		            },
-		            report: {
-		                onclick: function () {
-		                	Reports.saveReport();
-		                },
-		                text: 'Save Report'
-		            }
-		        },
-		        buttons: {
-		            contextButton: {
-		                menuItems: ['viewFullscreen', 'hallmark','report']
-		            }
-		        }
-		    },
-		    
-		    navigation: {
-		        buttonOptions: {
-		            y: -25
-		        }
-		    }
+                    },
+                    useHTML: true,
+                    enabled: true,
+                    nodeFormatter: function () {
+                        if (this.point.expandable == true && this.point.collapsable == true) {
+                            return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="' + this.point.id + '" data-type="' + this.point.sankeyNodeType + '"></i>' +
+                                '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="' + this.point.parentId + '" data-type="' + this.point.sankeyNodeType + '"></i>';
+                        } else if (this.point.expandable == true) {
+                            return this.point.name + '<i class="far fa-plus-square" rel="tooltip" title="Expand this package" data-id="' + this.point.id + '" data-type="' + this.point.sankeyNodeType + '"></i>';
+                        } else if (this.point.collapsable == true) {
+                            return this.point.name + '<i class="far fa-minus-square" rel="tooltip" title="Collapse package files" data-id="' + this.point.parentId + '" data-type="' + this.point.sankeyNodeType + '"></i>';
+                        } else {
+                            return this.point.name
+                        }
 
-		});
-		
-		
-	      function openSaveModal(){
-          	$("#saveConfigModal").modal("show");
-	      }
-	      
-	      function openConfigOpenModal(){
-	          	$("#openConfigModal").modal("show");
-		      }
-	</script>
+                    }
+                }
+            }
+        },
+        series: [{
+            keys: ['from', 'to', 'weight'],
+            cursor: "pointer",
+            data: linksData,
+            type: 'sankey',
+            name: 'Customization effort',
+            nodes: nodes,
+            borderWidth: 0
+        }],
 
-	<script src="/js/sankey-filtering.js"></script>
+        title: {
+            text: ''
+        },
+
+        exporting: {
+            menuItemDefinitions: {
+                hallmark: {
+                    onclick: function () {
+                        $("#hallmarkModal").modal("show");
+
+                    },
+                    text: 'Analysis Hallmark'
+                },
+                report: {
+                    onclick: function () {
+                        Reports.saveReport();
+                    },
+                    text: 'Save Report'
+                }
+            },
+            buttons: {
+                contextButton: {
+                    menuItems: ['viewFullscreen', 'hallmark', 'report']
+                }
+            }
+        },
+
+        navigation: {
+            buttonOptions: {
+                y: -25
+            }
+        }
+
+    });
+
+
+    function openSaveModal() {
+        $("#saveConfigModal").modal("show");
+    }
+
+    function openConfigOpenModal() {
+        $("#openConfigModal").modal("show");
+    }
+</script>
+
+<script src="/js/sankey-filtering.js"></script>
 
 </html>
