@@ -2,10 +2,10 @@ package com.onekin.customdiff.dao;
 
 import com.onekin.customdiff.dao.extractor.ChurnFeatureSiblingsAndAssetsExtractor;
 import com.onekin.customdiff.dao.extractor.ChurnFeatureSiblingsAndPackagesExtractor;
-import com.onekin.customdiff.dao.extractor.ChurnProductsAndFeatureSiblingsExtractor;
+import com.onekin.customdiff.dao.extractor.ChurnFeatureSiblingsCustomizationExtractor;
 import com.onekin.customdiff.model.ChurnFeatureSiblingsAndAssets;
 import com.onekin.customdiff.model.ChurnFeatureSiblingsAndPackages;
-import com.onekin.customdiff.model.ChurnProductsAndFeatureSiblings;
+import com.onekin.customdiff.model.CustomsByFeatureAndCoreAsset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -35,7 +35,7 @@ public class ChurnFeatureSiblingsCoreAssetsDAO {
             "where fb.id_feature=:idFeature  and cp.idpackage in (:packageIds) " +
             "group by fb.id_feature_group, ca.idpackage;";
 
-    private final String CHURN_FEATURE_SIBLING= "SELECT fb.id_feature_group, cp.idpackage, cp.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
+    private final String CHURN_FEATURE_SIBLINGS= "SELECT fb.id_feature_group, cp.idpackage, cp.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
             "FROM  customization_fact cf " +
             "inner join variation_point vp on cf.idvariationpoint=vp.idvariationpoint " +
             "inner join core_asset ca on ca.idcoreasset=vp.idcoreasset "+
@@ -43,6 +43,18 @@ public class ChurnFeatureSiblingsCoreAssetsDAO {
             "inner join feature_bridge fb on fb.id_feature_group=vp.id_feature_group " +
             "where  fb.id_feature_group in (:featureSiblingIds) " +
             "group by fb.id_feature_group, ca.idpackage;";
+
+
+    private final String CUSTOMIZATIONS_FEATURE_SIBLING= "SELECT cf.idcustomization, fb.id_feature_group, ca.idcoreasset, ca.path, ca.name, cf.idproductrelease," +
+            "cf.lines_added, cf.lines_deleted, cf.custom_diff, cf.message_set, cf.greater_diff, vp.expression " +
+            "FROM  customization_fact cf " +
+            "inner join variation_point vp on cf.idvariationpoint=vp.idvariationpoint " +
+            "inner join core_asset ca on ca.idcoreasset=vp.idcoreasset "+
+            "inner join component_package cp on ca.idpackage=cp.idpackage "+
+            "inner join feature_bridge fb on fb.id_feature_group=vp.id_feature_group " +
+            "where fb.id_feature_group=:featureSiblingId    " +
+            "group by fb.id_feature_group;";
+
 
     private final String CHURN_FEATURE_SIBLING_ASSETS= "SELECT fb.id_feature_group, ca.idcoreasset, ca.name, sum(cf.lines_added), sum(cf.lines_deleted) " +
             "FROM  customization_fact cf " +
@@ -76,7 +88,7 @@ public class ChurnFeatureSiblingsCoreAssetsDAO {
     public List<ChurnFeatureSiblingsAndPackages> getChurnFeatureSiblingsPackages(Set<Integer> featureSiblingIds) {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("featureSiblingIds", featureSiblingIds);
-        return namedJdbcTemplate.query(CHURN_FEATURE_SIBLING, parameters, new ChurnFeatureSiblingsAndPackagesExtractor());
+        return namedJdbcTemplate.query(CHURN_FEATURE_SIBLINGS, parameters, new ChurnFeatureSiblingsAndPackagesExtractor());
 
     }
 
@@ -100,5 +112,11 @@ public class ChurnFeatureSiblingsCoreAssetsDAO {
         parameters.addValue("featureSiblingId", featureSiblingId);
         parameters.addValue("packageId",packageId);
         return namedJdbcTemplate.query(CHURN_FEATURE_SIBLING_BY_PACKAGE, parameters, new ChurnFeatureSiblingsAndPackagesExtractor());
+    }
+
+    public List<CustomsByFeatureAndCoreAsset> getCustomizations(String featuresiblingId) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("featureSiblingId", featuresiblingId);
+        return namedJdbcTemplate.query(CUSTOMIZATIONS_FEATURE_SIBLING, parameters, new ChurnFeatureSiblingsCustomizationExtractor());
     }
 }

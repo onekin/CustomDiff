@@ -64,4 +64,15 @@ public class NodeCustomizationController {
 		return "node-diffs";
 	}
 
+	@GetMapping("/featuresibling/{featuresiblingId}")
+	public String getFeatureSiblingCustomizations(@PathVariable(name = "featuresiblingId", required = true) String featuresiblingId,
+										   Model model) {
+		List<CustomsByFeatureAndCoreAsset> customizations = nodeCustomizationService
+				.getFeatureSiblingCustomizations(featuresiblingId);
+		model.addAttribute("customizations", customizations);
+		model.addAttribute("nodeType","Feature Sibling");
+		model.addAttribute("nodeName",  featuresiblingId);
+		return "node-diffs";
+	}
+
 }
