@@ -4,13 +4,17 @@ CustomDIFF uses pure::variants and Git as the  variability manager and code repo
 The application is implemented in two different modules: (1) the visualization module, available in this repository and 
 (2) the data mining module, available at https://github.com/onekin/git2spldb
 
-There is a video demo available at: T.B.D \
+There is a video demo available at: https://vimeo.com/577936099 \
 Online demo available at: http://customdiff.onekin.org
+
+CustomDIFF has been accepted to be published in EMSE Journal in the work "Visualizing the Customization Effort in Product-Based-Evolving SPLs: A Case of Action Design Research"
 
 ## Acknowledgements
 
 This work uses the following librariers:
 * [Highcharts (c) - 2009-2021 Torstein Honsi](https://www.highcharts.com/blog/download/?=noncomm)
+  * Highcharts is a commercial library. CustomDIFF uses its non-commercial license that is released under Creative Commons Attribution-NonCommercial 3.0.
+   If you want to use CustomDIFF commercially you must purchase a license of HighCharts.
 * [Bootstrap](http://getbootstrap.com)
 * [jQuery](http://jquery.com)
 * [Spring Boot](https://github.com/spring-projects/spring-boot)
@@ -24,7 +28,7 @@ The easiest way of running CustomDIFF with the replication data is using Docker:
 2. Open a terminal in the root of the project
 3. run docker-compose up
 
-In this way the web application will be launched in localhost (by default the app will be running on port 9090)
+In this way the web application will be launched in localhost (by default the app will be running on port 9091)
 and the customization data available for visualization will be that of the WeatherStationSPL.
 
 ### Manually
