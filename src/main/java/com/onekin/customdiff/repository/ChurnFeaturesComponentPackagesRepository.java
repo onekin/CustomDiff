@@ -3,7 +3,7 @@ package com.onekin.customdiff.repository;
 import java.util.List;
 import java.util.Set;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.onekin.customdiff.model.ChurnFeaturesPackageAssets;
 import org.springframework.data.jpa.repository.Query;

@@ -3,7 +3,7 @@ package com.onekin.customdiff.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.onekin.customdiff.utils.PrefixConstants;
 import org.springframework.beans.factory.annotation.Autowired;

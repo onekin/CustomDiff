@@ -1,6 +1,6 @@
 package com.onekin.customdiff.repository;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.data.repository.CrudRepository;
 

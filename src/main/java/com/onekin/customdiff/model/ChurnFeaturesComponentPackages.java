@@ -1,17 +1,16 @@
 package com.onekin.customdiff.model;
 
 
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "churn_features_product_packages")
 public class ChurnFeaturesComponentPackages {
 	
-	@Id String id;
+	@Id
+	String id;
 	String idfeature; 
 	String featurename;
 	int idparentfeature;

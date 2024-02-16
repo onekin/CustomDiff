@@ -1,5 +1,9 @@
-#### Stage 1: Build the application
-FROM maven:3.6.2-jdk-8  as build
+# Start with a base image containing Java runtime (JDK 17)
+FROM openjdk:17-slim as build
+
+# Install Maven
+RUN apt-get update && \
+    apt-get install -y maven
 
 # Set the current working directory inside the image
 WORKDIR /app
@@ -16,7 +20,7 @@ RUN mvn dependency:go-offline -B
 COPY src src
 
 # Package the application
-RUN mvn package -DskipTests
+RUN mvn clean package -DskipTests
 
 RUN mv target/custom-diff-*.jar target/custom-diff.jar
 
